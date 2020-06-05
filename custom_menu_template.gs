@@ -44,12 +44,29 @@ function onOpen() {
       .addToUi();
 }
 
+/**
+* Method alert(prompt) of Class Ui is used.
+* Opens a dialog box in the user's editor with the given message and an "OK" button.
+*/
 function menuItem1() {
-  // Add functionality to be performed on clicking the menu item here.
+  SpreadsheetApp.getUi() 
+     .alert('You clicked the first menu item!');
 }
 
+/**
+* Method alert(prompt, buttons) of Class Ui is used.
+* Opens a dialog box in the user's editor with the given message, and 'YES' and 'NO' set of buttons.
+* The user can also close the dialog by clicking the close button in its title bar.
+*/
 function menuItem2(){
-  // Add functionality to be performed on clicking the menu item here.
+  var ui = SpreadsheetApp.getUi();  
+  var response = ui.alert('Are you sure you want to continue?', ui.ButtonSet.YES_NO);
+  // Process the user's response.
+  if (response == ui.Button.YES) {
+    ui.alert('The user clicked "Yes."');
+  } else {
+    ui.alert('The user clicked "No" or the close button in the dialog\'s title bar.');
+  }
 }
 
 function menuItem3() {
