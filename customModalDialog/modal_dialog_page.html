@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <!-- The HTML <head> element contains machine-readable information (metadata) about the document -->
+  <!-- For example, its title, scripts, and style sheets -->
+  <head>
+    <!-- The <base> tag specifies the base URL and/or target for all relative URLs in a document -->
+    <!-- There can only be one single <base> element in a document -->
+    <!-- It must be inside the <head> element -->
+    <base target="_top">
+    <!-- The <style> tag is used to define style information (CSS) for a document -->
+    <style>
+      body {
+        color: #222;
+        font: 13px/18px arial, sans-serif;
+      }
+      label {
+        color: Black;
+        font-weight: normal;
+      }
+      /* Radio Button */
+      input[type="radio"] {
+        background: #fff;
+        border: 1px solid #c6c6c6;
+        border-radius: 50%;
+        box-sizing: border-box;
+        height: 15px;
+        margin: 0 6px 0 0;
+        outline: 1;
+        top: 2px;
+        width: 15px;
+      }
+      /* Checkbox */
+      input[type="checkbox"] {
+        background: #fff;
+        border: 1px solid #c6c6c6;
+        border-radius: 1px;
+        height: 13px;
+        left: 1px;
+        margin: 2px 8px 0 0;
+        outline: 1;
+        position: relative;
+        top: 1px;
+        width: 13px;
+      }
+      button {
+        font-family: arial, sans-serif;
+        text-shadow: 1px 2px 20px #000000;
+        border: 2px solid #dcdcdc; 
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- The <form> tag is used to create an HTML form for user input -->
+    <form>
+      <!-- Text Input Box -->
+      <!-- The <label> element represents a caption for an item in a user interface -->
+      <!-- The <br> element produces a line break in text -->
+      <label for="text_input">Enter text:</label><br>
+      <!-- Text is the default type of <input> tag -->
+      <!-- Line-breaks are automatically removed from the input text value -->
+      <input type="text" id="input-text"><br><br>
+      
+      <!-- Dropdown List -->
+      <div id = "dropdown">
+        <label for="list-elements">Select a list element:</label><br>
+        <!-- The <select> element represents a control that provides a menu of options -->
+        <select id="dropdown-list" name="select-list-element">
+          <!-- The <option> tag defines an option in a select list --> 
+          <!-- <option> elements go inside a <select>, <optgroup>, or <datalist> element -->
+          <option value="List Element 1">List Element 1</option>
+          <option value="List Element 2">List Element 2</option>
+          <option value="List Element 3">List Element 3</option>
+          <option value="List Element 4">List Element 4</option>
+        </select>
+      </div>
+      <br>
+      
+      <!-- Radio Buttons -->
+      <!-- A radio button allows a single value to be selected out of multiple choices with the same name value -->
+      <!-- The <div> tag defines a division or a section in an HTML document -->
+      <div id = "input-radio-buttons">
+        <label for="input-radio">Select a radio button:</label><br>
+          <input type="radio" id="0" name="radio-buttons" value = "Radio Button 1"><label>Radio Button 1</label><br>
+          <input type="radio" id="1" name="radio-buttons" value = "Radio Button 2"><label>Radio Button 2</label><br>
+          <input type="radio" id="2" name="radio-buttons" value = "Radio Button 3"><label>Radio Button 3</label><br>
+      </div>
+      <br>
+      
+      <!-- Checkbox Buttons -->
+      <!-- Checkboxes are used to let a user select one or more options from a limited number of choices -->
+      <div id = "input-checkbox">
+        <label for="checkboxes">Select 1 or more checkboxes:</label><br>
+          <input type="checkbox" id="0" name="checkboxes" value = "1" ><label>Checkbox 1</label><br>
+          <input type="checkbox" id="1" name="checkboxes" value = "2" ><label>Checkbox 2</label><br>
+          <input type="checkbox" id="2" name="checkboxes" value = "3" ><label>Checkbox 3</label><br>
+        <br>
+      </div>
+      <!-- The <button> element represents a clickable button -->
+      <button onclick='sendData()'>Submit</button><br><br>
+    </form>
+    
+    <!-- The <script> tag is used to define a client-side script (JavaScript) -->
+    <script>
+      // Send text input, selected list element value, selected radio button value, 
+      // array of selected checkbox values to the relevant server-side Apps Script function
+      function sendData(){
+        // The getElementById() method returns the element that has 
+        // the ID attribute with the specified value.
+        var inputText = document.getElementById("input-text").value;
+        var selectedListElement = document.getElementById("dropdown-list").value;
+        var selectedRadioButton;
+        // The querySelectorAll() method returns all elements in the document
+        // that matches a specified CSS selector.
+        const radioButtons = document.querySelectorAll('input[name="radio-buttons"]');
+        for(const button of radioButtons){
+          if (button.checked) {
+            selectedRadioButton = button.value; 
+            break;
+          }
+        }
+        var selectedCheckboxes = [];
+        const checkBoxes = document.querySelectorAll('input[name="checkboxes"]');
+        for(const checkBox of checkBoxes){
+          if (checkBox.checked) {
+            selectedCheckboxes.push(checkBox.value); 
+          }
+        }
+        // google.script.run is an asynchronous client-side JavaScript API
+        // that can call server-side Apps Script functions.
+        google.script.run.displayInput(inputText,selectedListElement,selectedRadioButton,selectedCheckboxes);
+      }
+    </script>
+  </body>
+</html>
