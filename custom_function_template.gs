@@ -24,8 +24,6 @@
 *
 * (operation = 7) Get The median for the given input values.
 * @return The median for the given input values.
-*
-* @customfunction
 */
 function customFunctionTemplate() {
   if (arguments.length < 2) {
