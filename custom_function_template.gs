@@ -35,7 +35,6 @@ function customFunctionTemplate() {
   var values = Array.prototype.slice.call(arguments).slice(1); // Input values are second argument onwards. 
   var len = values.length; // Length of input values (on which function is to be performed).
   
-  
   // Calculates sum of input values.
   if (operation === 0) {
     var sum = 0;
