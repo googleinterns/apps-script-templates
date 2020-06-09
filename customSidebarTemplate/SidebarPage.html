@@ -113,7 +113,7 @@
       }
       // Send selected list element value to the relevant server-side Apps Script function
       function sendListElement(){
-        var selectedListElement = document.getElementById("dropdown-list").value
+        var selectedListElement = document.getElementById("dropdown-list").value;
         google.script.run.listFunction(selectedListElement);
       }
       // Send selected radio button value to the relevant server-side Apps Script function
@@ -121,7 +121,7 @@
         var selectedRadioButton;
         // The querySelectorAll() method returns all elements in the document
         // that matches a specified CSS selector.
-        const radioButtons = document.querySelectorAll('input[name="radio-buttons"]')
+        const radioButtons = document.querySelectorAll('input[name="radio-buttons"]');
         for(const button of radioButtons){
           if (button.checked) {
             selectedRadioButton = button.value; 
@@ -132,7 +132,7 @@
       // Send array object of selected checkbox values to the relevant server-side Apps Script function
       function sendCheckboxSelection(){
         var selectedCheckboxes = [];
-        const checkBoxes = document.querySelectorAll('input[name="checkboxes"]')
+        const checkBoxes = document.querySelectorAll('input[name="checkboxes"]');
         for(const checkBox of checkBoxes){
           if (checkBox.checked) {
             selectedCheckboxes.push(checkBox.value); 
