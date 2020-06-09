@@ -42,5 +42,3 @@ function radioButtonFunction(selectedRadioButton) {
 function checkBoxFunction(selectedCheckboxes) {
   // Add functionality to be performed with the array of selected checkboxes 
 }
-
-
