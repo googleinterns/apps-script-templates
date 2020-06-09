@@ -35,56 +35,39 @@ function customFunctionTemplate() {
   var values = Array.prototype.slice.call(arguments).slice(1); // Input values are second argument onwards. 
   var len = values.length; // Length of input values (on which function is to be performed).
   
-  // Calculates sum of input values.
-  if (operation === 0) {
+  if (operation >= 0 && operation <= 3) {
+    // Calculates sum of input values.
     var sum = 0;
     for (var i = 0 ; i < len ; i++) {
       sum += values[i];
     }
-    return sum;
-  }
+    if (operation === 0) {
+      return sum;
+    }
   
-  // Calculates mean of input values 
-  if (operation === 1) {
-    var sum = 0;
-    for (var i = 0 ; i < len ; i++) {
-      sum += values[i];
+    // Calculates mean of input values 
+    var mean = sum / len;
+    if (operation === 1) {
+      return mean;
     }
-    var mean = sum/len;
-    return mean;
-  }
   
-  // Calculates variance of input values 
-  if (operation === 2) {
-    var sum = 0;
-    for (var i = 0 ; i < len ; i++) {
-      sum += values[i];
-    }
-    var mean = sum/len;
+    // Calculates variance of input values 
     var sumSquareDifference = 0; // Sum of squared differences
     // Summation of squared difference between each input value and mean of all input values.
     for (var i = 0; i < len; i++) {
-      sumSquareDifference+= Math.pow((values[i] - mean),2);
+      sumSquareDifference += Math.pow((values[i] - mean),2);
     }
-    var variance = sumSquareDifference/len; // Variance is mean of sum of squared differences.
-    return variance;
-  }
+    var variance = sumSquareDifference / len; // Variance is mean of sum of squared differences.
+    if (operation === 2) {
+      return variance;
+    }
   
-  // Calculates standard deviation of input values
-  if (operation === 3) {
-    var sum = 0;
-    for (var i = 0 ; i < len ; i++) {
-      sum += values[i];
-    }
-    var mean = sum/len;
-    var sumSquareDifference = 0; 
-    for (var i = 0; i < len; i++) {
-      sumSquareDifference+= Math.pow((values[i] - mean),2);
-    }
-    var variance = sumSquareDifference/len; 
+    // Calculates standard deviation of input values.
     // Standard deviation is square root of variance.
     var standardDeviation = Math.sqrt(variance); 
-    return standardDeviation;
+    if (operation === 3) {
+      return standardDeviation;
+    }
   }
   
   // Calculates mode of input values
