@@ -47,5 +47,3 @@ function displayInput(inputText,selectedListElement,selectedRadioButton,selected
   var displayMessage = messageInputText + messageListElement + messageRadioButton + messageCheckbox;
   spreadsheetUi.alert(displayMessage);
 }
-
-
