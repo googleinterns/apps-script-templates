@@ -108,11 +108,11 @@
         // The getElementById() method returns the element that has 
         // the ID attribute with the specified value.
         var inputText = document.getElementById("input-text").value;
-        var selectedListElement = document.getElementById("dropdown-list").value
+        var selectedListElement = document.getElementById("dropdown-list").value;
         var selectedRadioButton;
         // The querySelectorAll() method returns all elements in the document
         // that matches a specified CSS selector.
-        const radioButtons = document.querySelectorAll('input[name="radio-buttons"]')
+        const radioButtons = document.querySelectorAll('input[name="radio-buttons"]');
         for(const button of radioButtons){
           if (button.checked) {
             selectedRadioButton = button.value; 
@@ -120,7 +120,7 @@
           }
         }
         var selectedCheckboxes = [];
-        const checkBoxes = document.querySelectorAll('input[name="checkboxes"]')
+        const checkBoxes = document.querySelectorAll('input[name="checkboxes"]');
         for(const checkBox of checkBoxes){
           if (checkBox.checked) {
             selectedCheckboxes.push(checkBox.value); 
