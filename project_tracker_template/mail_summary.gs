@@ -10,10 +10,13 @@
 function getMilestoneData() {
   var countColumns = sendMilestoneCount();
   // Milestone Data stored from Row 6, Column C onwards.
-  var values = SpreadsheetApp.getActive()
-                   .getSheetByName("Summary")
-                   .getRange(6, 3, 9, countColumns)
-                   .getValues();
+  var firstEngineerRow = 6;
+  var firstMilestoneColumn = 3;
+  var values =
+      SpreadsheetApp.getActive()
+          .getSheetByName("Summary")
+          .getRange(firstEngineerRow, firstMilestoneColumn, 9, countColumns)
+          .getValues();
   var milestones = [];
   for (var j = 0; j < countColumns; j++) {
     var milestone = {};
@@ -49,11 +52,13 @@ function getMilestoneData() {
  */
 function getMailAddress() {
   var countTeam = teamSize();
-  // Mail Addresses stored in Column R
+  var milestoneNumber = sendMilestoneCount();
   // Team Data stored from Row 6 onwards
+  var firstEngineerRow = 6;
+  var contactColumn = 10 + milestoneNumber;
   var teamMail = SpreadsheetApp.getActive()
                      .getSheetByName('Team')
-                     .getRange(6, 18, countTeam)
+                     .getRange(firstEngineerRow, contactColumn, countTeam)
                      .getValues();
   var emailTo = '';
   var countMail = 0;
