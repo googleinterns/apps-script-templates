@@ -93,7 +93,7 @@ function initializeArray(rowCount, columnCount) {
 }
 
 /**
- * Updates status cells' value to 'Not Started','Done' or 'In Progress' in the
+ * Updates status cells' values to 'Not Started','Done' or 'In Progress' in the
  * Task Sheet
  * @param {Object[][]} taskTable A two dimensional array containing values of
  *     the table in the Task Sheet
@@ -125,7 +125,8 @@ function updateStatus(taskTable, tableLength, statusColumnRange) {
 
 /**
  * Updates start date, estimated launch date, priority of a task/ milestone in
- * the Task sheet Updates checkboxes reflecting milestone assignment in the Team
+ * the Task sheet
+ * Updates checkboxes reflecting milestone assignment in the Team
  * Sheet
  * @param {Date} projectStart Date object containing start date of the project
  * @param {Date} currDate Date object containing current date of the project
@@ -184,11 +185,11 @@ function updateDatesPriorityCheckbox(
         var endDateTask = addDays(startDateToPrintEndDate, daysPrintEndDate);
         endDateTaskTable.push([ endDateTask ]);
         startDateToPrintEndDate = addDays(endDateTask, 1);
-        taskEngineerEndDate[engineerIndex] = startDatePrintEndDate;
+        taskEngineerEndDate[engineerIndex] = startDateToPrintEndDate;
       }
       startDateTask = addDays(startDateTask, days + 1);
       taskEngineerStartDate[engineerIndex] = startDateTask;
-      checkBoxValues[engineerIndex][currentMilestoneNumber] = "=TRUE";
+      checkBoxValues[engineerIndex][currentMilestoneNumber - 1] = "=TRUE";
     }
     // If row type is milestone
     else if (!isRowTypeTask) {
@@ -199,7 +200,7 @@ function updateDatesPriorityCheckbox(
       endDateTaskTable.push([ '=if(MAXIFS(G:G,M:M,"=' + currentMilestoneNumber +
                               '",O:O,"=0") = 0, "", MAXIFS(G:G,M:M,"=' +
                               currentMilestoneNumber + '",O:O,"=0"))' ]);
-      // First row containing Milestone/Task data is Row 7
+      // First row containing Milestone/ Task data is Row 7
       var nextRowNumber = Number(rowIndex) + 8;
       priorityColumnValues[rowIndex] = [
         '=if(iferror(MATCH("HIGH",ArrayFormula(if(($O' + nextRowNumber +
@@ -213,17 +214,23 @@ function updateDatesPriorityCheckbox(
         ':$M)=' + currentMilestoneNumber + ', $E' + nextRowNumber +
         ':$E,""),"")),0))>0, "LOW","")))'
       ];
-    } else {
+    }
+    // If row type is task and no owner is selected
+    else {
       startDateTaskTable.push([ '' ]);
       endDateTaskTable.push([ '' ]);
     }
   }
+  // Set Start Dates
   var startDateRange = taskSheet.getRange(7, 6, tableLength, 1);
   startDateRange.setValues(startDateTaskTable);
+  // Set End Dates
   var endDateRange = taskSheet.getRange(7, 7, tableLength, 1);
   endDateRange.setValues(endDateTaskTable);
+  // Clear all the checkbox selections and then set to the updated values
   teamTableRange.setValue("=FALSE");
   teamTableRange.setValues(checkBoxValues);
+  // Set Priority Values
   var priorityColumn = taskSheet.getRange(7, 5, tableLength);
   priorityColumn.setValues(priorityColumnValues);
 }
@@ -246,30 +253,35 @@ function updateSpreadsheet() {
   var isProjectStartAfterToday = currDate < projectStart ? true : false;
   var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Tasks');
   var teamSheet = SpreadsheetApp.getActive().getSheetByName('Team');
-  var teamRow = 6;
-  var teamColumn = 3;
+  var firstEngineerRow = 6;
+  var usernameColumn = 3;        // Column C in Team Sheet
+  var firstMilestoneColumn = 7;  // Column G in Team Sheet
   var countEng = teamSize();
   var engineerInfo =
-      teamSheet.getRange(teamRow, teamColumn, countEng, 4).getValues();
+      teamSheet.getRange(firstEngineerRow, usernameColumn, countEng, 4)
+          .getValues();
   var codingUnitsPerDay = getCodingUnitsPerDay(engineerInfo, countEng);
   var usernames = getUsernames(engineerInfo, countEng);
   var firstTaskRow = 7;
-  var ownerColumn = 3;
-  var priorityColumn = 5;
+  var ownerColumn = 3;     // Column C in Task Sheet
+  var priorityColumn = 5;  // Column E in Task Sheet
   var milestoneNumber = sendMilestoneCount();
   var numRows = getLastDataRow(taskSheet) - firstTaskRow + 1;
-  // Column C to Column O
+  // Column C to Column O in Task Sheet
   var taskTable =
       taskSheet.getRange(firstTaskRow, ownerColumn, numRows, 13).getValues();
   var teamTableRange =
       SpreadsheetApp.getActive().getSheetByName('Team').getRange(
-          6, 6, countEng, milestoneNumber);
+          firstEngineerRow, firstMilestoneColumn, countEng, milestoneNumber);
   var checkBoxValues = initializeArray(countEng, milestoneNumber);
   var priorityColumnValues = [];
+  var priorityIndex = 2;  // Column index in Task Table
   for (var i = 0; i < numRows; i++) {
     priorityColumnValues.push([ taskTable[i][2] ]);
   }
-  var statusColumnRange = taskSheet.getRange(7, 8, numRows, 1);
+  var statusColumn = 8;  // Column G in Task Sheet
+  var statusColumnRange =
+      taskSheet.getRange(firstTaskRow, statusColumn, numRows, 1);
   updateStatus(taskTable, numRows, statusColumnRange);
   updateDatesPriorityCheckbox(projectStart, currDate, isProjectStartAfterToday,
                               taskSheet, teamTableRange, codingUnitsPerDay,
