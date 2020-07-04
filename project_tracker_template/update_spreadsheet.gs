@@ -60,21 +60,6 @@ function getUsernames(engineerInfo, countEng) {
 }
 
 /**
- * Returns array of given length with all values initialized to the same date
- * @param {Date} date The date to which the array values are initialized
- * @param {Number} arrayLength Required length of the array
- * @return {Date[]} Array of given length with all values initialized to the
- *     same date
- */
-function initializeDate(date, arrayLength) {
-  var taskDate = [];
-  for (var i = 0; i < arrayLength; i++) {
-    taskDate.push([ date ]);
-  }
-  return taskDate;
-}
-
-/**
  * Returns empty array with given number of rows and columns
  * @param {Number} rowCount The number of rows required in the array
  * @param {Number} columnCount The number of columns required in the array
@@ -124,6 +109,63 @@ function updateStatus(taskTable, tableLength, statusColumnRange) {
 }
 
 /**
+ * Returns an array containing initial task start dates of each engineer
+ * Initial Task Start Date for an engineer is the maximum of Project Start Date
+ * and the engineer's Start Date
+ * @param {Date} projectStart Date object containing start date of the project
+ * @param {Object[][]} engineerInfo A two dimensional array containing
+ *     information of the engineers in the Team Sheet
+ * @param {Number} countEng Number of engineers in the Team
+ * @return {Date[]} Date array containing initial task start dates of each
+ *     engineer
+ */
+function initializeTaskStartDate(projectStart, engineerInfo, countEng) {
+  var taskEngineerStartDate = [];
+  for (var i = 0; i < countEng; i++) {
+    var startDateEng = engineerInfo[i][2];
+    if (projectStart < startDateEng) {
+      taskEngineerStartDate.push(startDateEng);
+    } else {
+      taskEngineerStartDate.push(projectStart);
+    }
+  }
+  return taskEngineerStartDate;
+}
+
+/**
+ * Sets the initial task start dates (to be used for calculating the estimated
+ * end date of the task for each engineer) in 'taskEngineerEndDate'
+ * The initial task start dates for these calculations will be maximum of the
+ * current date and the displayed task start date for each engineer
+ * (which is maximum of project start date and engineer's start date)
+ * Sets corresponding value in 'isTaskEngineerStartDateAfterToday' array to
+ * 'true' if the displayed task start date for the engineer is greater than
+ * current date else 'false'
+ * @param {Date[]} taskEngineerStartDate Date array containing displayed task
+ *     start dates of each engineer
+ * @param {Boolean[]} isTaskEngineerStartDateAfterToday Boolean array to store
+ *     'true' if the displayed task start date for the engineer is greater than
+ * current date else 'false'
+ * @param {Date[]} taskEngineerEndDate Date array to store maximum of the
+ *     current date and the displayed task start date for each engineer
+ * @param {Number} countEng Number of engineers in the Team
+ * @param {Date} currDate The current date
+ */
+function initializeStartForEndDates(taskEngineerStartDate,
+                                    isTaskEngineerStartDateAfterToday,
+                                    taskEngineerEndDate, countEng, currDate) {
+  for (var i = 0; i < countEng; i++) {
+    if (taskEngineerStartDate[i] > currDate) {
+      taskEngineerEndDate.push(taskEngineerStartDate[i]);
+      isTaskEngineerStartDateAfterToday.push(true);
+    } else {
+      taskEngineerEndDate.push(currDate);
+      isTaskEngineerStartDateAfterToday.push(false);
+    }
+  }
+}
+
+/**
  * Updates start date, estimated launch date, priority of a task/ milestone in
  * the Task sheet
  * Updates checkboxes reflecting milestone assignment in the Team
@@ -137,6 +179,8 @@ function updateStatus(taskTable, tableLength, statusColumnRange) {
  *     Sheet
  * @param {Number[]} codingUnitsPerDay Array of numbers containing coding units
  *     per day of each engineer
+ * @param {Object[][]} engineerInfo A two dimensional array containing
+ *     information of the engineers in the Team Sheet
  * @param {String[]} usernames Array of strings containing username of each
  *     engineer
  * @param {Object[][]} taskTable A two dimensional array containing values of
@@ -150,14 +194,15 @@ function updateStatus(taskTable, tableLength, statusColumnRange) {
  */
 function updateDatesPriorityCheckbox(
     projectStart, currDate, isProjectStartAfterToday, taskSheet, teamTableRange,
-    codingUnitsPerDay, usernames, taskTable, countEng, tableLength,
-    checkBoxValues, priorityColumnValues) {
-  // Update to include engineer start date
-  var taskEngineerStartDate = initializeDate(projectStart, countEng);
-  var taskEngineerEndDate;
-  if (!isProjectStartAfterToday) {
-    taskEngineerEndDate = initializeDate(currDate, countEng);
-  }
+    engineerInfo, codingUnitsPerDay, usernames, taskTable, countEng,
+    tableLength, checkBoxValues, priorityColumnValues) {
+  var taskEngineerStartDate =
+      initializeTaskStartDate(projectStart, engineerInfo, countEng);
+  var isTaskEngineerStartDateAfterToday = [];
+  var taskEngineerEndDate = [];
+  initializeStartForEndDates(taskEngineerStartDate,
+                             isTaskEngineerStartDateAfterToday,
+                             taskEngineerEndDate, countEng, currDate);
   var startDateTaskTable = [];
   var endDateTaskTable = [];
   for (var rowIndex = 0; rowIndex < tableLength; rowIndex++) {
@@ -172,7 +217,7 @@ function updateDatesPriorityCheckbox(
       var startDateTask = taskEngineerStartDate[engineerIndex];
       startDateTaskTable.push([ startDateTask ]);
       var days = Math.ceil(estimateWorkDays / codingUnitsPerDay[engineerIndex]);
-      if (isProjectStartAfterToday) {
+      if (isTaskEngineerStartDateAfterToday[engineerIndex]) {
         // Calculate end date using estimated work days
         var endDateTask = addDays(startDateTask, days);
         endDateTaskTable.push([ endDateTask ]);
@@ -284,7 +329,7 @@ function updateSpreadsheet() {
       taskSheet.getRange(firstTaskRow, statusColumn, numRows, 1);
   updateStatus(taskTable, numRows, statusColumnRange);
   updateDatesPriorityCheckbox(projectStart, currDate, isProjectStartAfterToday,
-                              taskSheet, teamTableRange, codingUnitsPerDay,
-                              usernames, taskTable, countEng, numRows,
-                              checkBoxValues, priorityColumnValues);
+                              taskSheet, teamTableRange, engineerInfo,
+                              codingUnitsPerDay, usernames, taskTable, countEng,
+                              numRows, checkBoxValues, priorityColumnValues);
 }
