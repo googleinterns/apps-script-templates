@@ -19,21 +19,9 @@
         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
           <div class="card-body">
             <form>
-              <!-- Select Milestone in which the task is added -->
-              <label for="milestone-input">Select Milestone : </label>
-              <select id="task-milestone" name="select-list-priority">
-                <option value="1">1</option>
-              </select>
-              <br>
-              <br> 
               <!-- Task title -->
               <label for="title-input">Enter Task Title :</label><br>
               <input type="text" id="task-title">
-              <br>
-              <br>
-              <!-- Usernames of engineers to whom task is assigned -->
-              <label for="assign-input"> Assigned to (Enter Usernames) :</label><br>
-              <input type="text" id="task-assign">
               <br>
               <br>
               <!-- Priority of task -->
@@ -45,17 +33,13 @@
               </select>
               <br>
               <br>
-              <!-- Status of the task -->
-              <label for="list-status">Select status :</label><br>
-              <select id="task-status" name="select-list-status">
-                <option value="Done">Done</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Not Started">Not Started</option>
-                <option value="Blocked">Blocked</option>
-                <option value="On Hold">On Hold</option>
+              <!-- Select Milestone in which the task is added -->
+              <label for="milestone-input">Select Milestone : </label>
+              <select id="task-milestone" name="select-list-milestone" onclick='getUsernames()'>
+                <option value="1">1</option>
               </select>
               <br>
-              <br>       
+              <br> 
               <!-- Estimated coding days required for the task -->
               <label for="estimated-work-days"> Enter estimated work days :</label><br>
               <input type="text" id="task-estimated-work-days"><br><br>
@@ -64,7 +48,14 @@
               <input type="text" id="task-completed-work-days"><br><br>
               <!-- CL Link of the task -->
               <label for="cl-input">Enter CL Link :</label><br>
-              <input type="text" id="task-cl"><br><br>
+              <input type="text" id="task-cl"><br><br>          
+              <!-- Select Username of the Owner -->
+              <label for="owner-input">Select Owner (Username): </label>
+              <br>
+              <select id="task-owner" name="select-list-owner">
+              </select>
+              <br>
+              <br> 
               <!-- Notes -->
               <label for="notes-input">Enter Notes :</label><br>
               <input type="text" id="task-notes"><br><br>
@@ -150,54 +141,91 @@
     </div>
     <script>
       /**
-      * Add options in the dropdown list under 'Select Milestone' in the Add Task card
-      * Options added reflect the current number of milestones in the spreadsheet
-      * @param {Number} milestoneCount The current number of milestones in the spreadsheet
-      */
+       * Add options in the dropdown list under 'Select Milestone' in the Add Task
+       * card Options added reflect the current number of milestones in the
+       * spreadsheet
+       * @param {Number} milestoneCount The current number of milestones in the
+       *     spreadsheet
+       */
       function onSuccessMilestone(milestoneCount) {
         document.getElementById('task-milestone').innerHTML = "";
-        for (var i = 1; i <= milestoneCount; i++ ) { 
-          document.getElementById('task-milestone').innerHTML+= '<option value="'+ i + '">' + i +'</option>' ;
+        for (var i = 1; i <= milestoneCount; i++) {
+          document.getElementById('task-milestone').innerHTML +=
+              '<option value="' + i + '">' + i + '</option>';
         }
       }
+
       /**
-      * Get the number of milestones from the server-side sendMilestoneCount function 
-      * The server function returns the value to the client as a parameter passed to the onSuccessMilestone function 
-      */
+       * Get the number of milestones from the server-side sendMilestoneCount function
+       * The server function returns the value to the client as a parameter passed to
+       * the onSuccessMilestone function
+       */
       function getMilestoneCount() {
         google.script.run.withSuccessHandler(onSuccessMilestone).sendMilestoneCount();
       }
+
       /**
-      * Send new task data to the server-side insertTask function 
-      */
-      function sendTaskInput(){
+       * Add options in the dropdown list under 'Select Owner' in the 'Add Task' card
+       * Options added reflect the usernames of all the  the team members working on
+       * the project
+       * @param {String[]} usernames String array containing usernames of all the team
+       *     members
+       */
+      function onSuccessUsernames(usernames) {
+        document.getElementById('task-owner').innerHTML = "";
+        for (var engineerIndex = 0; engineerIndex < usernames.length;
+             engineerIndex++) {
+          document.getElementById('task-owner').innerHTML +=
+              '<option value="' + usernames[engineerIndex] + '">' +
+              usernames[engineerIndex] + '</option>';
+        }
+      }
+
+      /**
+       * Get the usernames of all the team members from the server-side
+       * sendTeamUsernames function The server function returns the string array to
+       * the client as a parameter passed to the onSuccessUsernames function
+       */
+      function getUsernames() {
+        google.script.run.withSuccessHandler(onSuccessUsernames).sendTeamUsernames();
+      }
+
+      /**
+       * Send new task data to the server-side insertTask function
+       */
+      function sendTaskInput() {
         var milestoneNumber = document.getElementById("task-milestone").value;
         var taskTitle = document.getElementById("task-title").value;
-        var assignTextInput = document.getElementById("task-assign").value; 
+        var owner = document.getElementById("task-owner").value;
         var priorityInput = document.getElementById("task-priority").value;
-        var statusInput = document.getElementById("task-status").value;
-        var estimatedWorkDays = document.getElementById("task-estimated-work-days").value;
-        var engDaysCompleted = document.getElementById("task-completed-work-days").value;
+        var estimatedWorkDays =
+            document.getElementById("task-estimated-work-days").value;
+        var engDaysCompleted =
+            document.getElementById("task-completed-work-days").value;
         var clLink = document.getElementById("task-cl").value;
         var notes = document.getElementById("task-notes").value;
-        google.script.run.insertTask ( milestoneNumber, taskTitle, assignTextInput, priorityInput,statusInput,
-        estimatedWorkDays, engDaysCompleted, clLink, notes);
-      }  
-      /**
-      * Send new milestone data to the server-side insertMilestoneMain function 
-      */
-      function sendMilestoneInput() {
-        var milestoneTitle = document.getElementById("milestone-title").value; 
-        var desiredLaunchDate = document.getElementById("milestone-desired-launch").value;
-        var notes = document.getElementById("milestone-notes").value;
-        google.script.run.insertMilestoneMain (milestoneTitle, desiredLaunchDate, notes);
+        google.script.run.insertTask(milestoneNumber, taskTitle, owner, priorityInput,
+                                     estimatedWorkDays, engDaysCompleted, clLink,
+                                     notes);
       }
       /**
-      * Send new engineer data to the server-side addEngineer function 
-      */
+       * Send new milestone data to the server-side insertMilestoneMain function
+       */
+      function sendMilestoneInput() {
+        var milestoneTitle = document.getElementById("milestone-title").value;
+        var desiredLaunchDate =
+            document.getElementById("milestone-desired-launch").value;
+        var notes = document.getElementById("milestone-notes").value;
+        google.script.run.insertMilestoneMain(milestoneTitle, desiredLaunchDate,
+                                              notes);
+      }
+      /**
+       * Send new engineer data to the server-side addEngineer function
+       */
       function sendEngineerInput() {
         var username = document.getElementById("eng-username").value;
-        var codingDaysPerWeek = document.getElementById("eng-coding-days-per-week").value;
+        var codingDaysPerWeek =
+            document.getElementById("eng-coding-days-per-week").value;
         var teamRole = document.getElementById("eng-team-role").value;
         var startDate = document.getElementById("eng-start").value;
         var endDate = document.getElementById("eng-end").value;
@@ -205,8 +233,10 @@
         var countTotalTask = document.getElementById("eng-count-total-task").value;
         var initiative = document.getElementById("eng-initiative").value;
         var emailAddress = document.getElementById("eng-email-address").value;
-        google.script.run.addEngineer (username, teamRole, codingDaysPerWeek, startDate, endDate,countCurrTask, countTotalTask, initiative, emailAddress);
-      }
+        google.script.run.addEngineer(username, teamRole, codingDaysPerWeek,
+                                      startDate, endDate, countCurrTask,
+                                      countTotalTask, initiative, emailAddress);
+      }  
     </script>
   </body>
 </html>
