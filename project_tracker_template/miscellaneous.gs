@@ -49,7 +49,7 @@ function getLastDataRow(taskSheet) {
   var lastRow;
   for (var rowIndex = MData.length - 1; rowIndex >= 0; rowIndex--) {
     if (Number(MData[rowIndex])) {
-      lastRow = rowIndex + 6;
+      lastRow = rowIndex + 7;
       break;
     }
   }
@@ -75,7 +75,18 @@ function teamSize() {
   return countEngineer;
 }
 
-// Update after the 'Row Type' Column is modified
+/**
+ * Returns string array containing usernames of team members working on the
+ * project
+ * @return {String[]} String array containing usernames of team members
+ */
+function sendTeamUsernames() {
+  var teamSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Team");
+  var teamCount = teamSheet.getRange('D2').getValue();
+  var usernames = teamSheet.getRange(6, 3, teamCount).getValues();
+  return usernames;
+}
+
 /**
  * Returns task number of the new task in the given milestone
  * @param {Sheet} taskSheet The sheet object for the Task Sheet
@@ -83,13 +94,7 @@ function teamSize() {
  * @return {Number} The task number of the new task in the given milestone
  */
 function getTaskNumber(taskSheet, lastRow, milestoneNumber) {
-  var numberPrevious = taskSheet.getRange(lastRow, 1).getValue();
-  var currentTaskNumber;
-  var splitNumberPrevious = numberPrevious.split(".");
-  if (numberPrevious == '') {
-    currentTaskNumber = 1;
-  } else {
-    currentTaskNumber = Number(splitNumberPrevious[1]) + 1;
-  }
+  var numberPrevious = taskSheet.getRange(lastRow, 14).getValue();
+  var currentTaskNumber = Number(numberPrevious) + 1;
   return currentTaskNumber;
 }
