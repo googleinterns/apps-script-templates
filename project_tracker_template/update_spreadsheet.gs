@@ -83,35 +83,29 @@ function initializeArray(rowCount, columnCount) {
  * @param {Object[][]} taskTable A two dimensional array containing values of
  *     the table in the Task Sheet
  * @param {Number} tableLength Length of taskTable array
- * @param {Range} statusColumnRange Range object containing range of the status
- *     column in the Task Sheet
  */
-function updateStatus(taskTable, tableLength, statusColumnRange) {
-  var statusColumnValues = [];
+function updateStatus(taskTable, tableLength) {
   for (var i = 0; i < tableLength; i++) {
-    statusColumnValues.push([ taskTable[i][5] ]);
-  }
-  for (var i = 0; i < tableLength; i++) {
-    var estimatedDays = taskTable[i][6];
-    var remainingDays = taskTable[i][7];
-    var completedDays = taskTable[i][8];
+    var estimatedDays = taskTable[i][8];   // Column I
+    var remainingDays = taskTable[i][9];   // Column J
+    var completedDays = taskTable[i][10];  // Column K
+    // Update status cell in Column H in the Task Sheet
     if (estimatedDays == '') {
-      statusColumnValues[i] = [ '' ];
+      taskTable[i][7] = [ '' ];
     } else if (completedDays == '0' || completedDays == '') {
-      statusColumnValues[i] = [ 'Not Started' ];
+      taskTable[i][7] = [ 'Not Started' ];
     } else if (remainingDays == '0') {
-      statusColumnValues[i] = [ 'Done' ];
+      taskTable[i][7] = [ 'Done' ];
     } else {
-      statusColumnValues[i] = [ 'In Progress' ];
+      taskTable[i][7] = [ 'In Progress' ];
     }
   }
-  statusColumnRange.setValues(statusColumnValues);
 }
 
 /**
  * Returns an array containing initial task start dates of each engineer
  * Initial Task Start Date for an engineer is the maximum of Project Start Date
- * and the engineer's Start Date
+ * and the Engineer's Start Date
  * @param {Date} projectStart Date object containing start date of the project
  * @param {Object[][]} engineerInfo A two dimensional array containing
  *     information of the engineers in the Team Sheet
@@ -134,18 +128,19 @@ function initializeTaskStartDate(projectStart, engineerInfo, countEng) {
 
 /**
  * Sets the initial task start dates (to be used for calculating the estimated
- * end date of the task for each engineer) in 'taskEngineerEndDate'
- * The initial task start dates for these calculations will be maximum of the
- * current date and the displayed task start date for each engineer
- * (which is maximum of project start date and engineer's start date)
- * Sets corresponding value in 'isTaskEngineerStartDateAfterToday' array to
- * 'true' if the displayed task start date for the engineer is greater than
+ * end date of the task for each engineer) in 'taskEngineerEndDate' 
+ * The initial task start dates for these calculations is maximum of the 
+ * current date and the displayed task start date for each engineer (where 
+ * displayed task start date is maximum of project start date and engineer's 
+ * start date) 
+ * Sets corresponding value in 'isTaskEngineerStartDateAfterToday' array to 
+ * 'true' if the displayed task start date for the engineer is greater than 
  * current date else 'false'
  * @param {Date[]} taskEngineerStartDate Date array containing displayed task
  *     start dates of each engineer
  * @param {Boolean[]} isTaskEngineerStartDateAfterToday Boolean array to store
- *     'true' if the displayed task start date for the engineer is greater than
- * current date else 'false'
+ *     'true' if the displayed task start date is
+ * greater than current date else 'false' for all engineers
  * @param {Date[]} taskEngineerEndDate Date array to store maximum of the
  *     current date and the displayed task start date for each engineer
  * @param {Number} countEng Number of engineers in the Team
@@ -167,16 +162,12 @@ function initializeStartForEndDates(taskEngineerStartDate,
 
 /**
  * Updates start date, estimated launch date, priority of a task/ milestone in
- * the Task sheet
- * Updates checkboxes reflecting milestone assignment in the Team
+ * the Task sheet Updates checkboxes reflecting milestone assignment in the Team
  * Sheet
  * @param {Date} projectStart Date object containing start date of the project
  * @param {Date} currDate Date object containing current date of the project
  * @param {Boolean} isProjectStartAfterToday Boolean value to store whether
  *     project start date is after current date (TRUE) or not (FALSE).
- * @param {Sheet} taskSheet Sheet object for the Task Sheet
- * @param {Range} teamTableRange Range object for the checkbox table in the Team
- *     Sheet
  * @param {Number[]} codingUnitsPerDay Array of numbers containing coding units
  *     per day of each engineer
  * @param {Object[][]} engineerInfo A two dimensional array containing
@@ -189,106 +180,144 @@ function initializeStartForEndDates(taskEngineerStartDate,
  * @param {Number} countEng Number of engineers in the Team
  * @param {Object[][]} checkBoxValues A two dimensional array to reset checkbox
  *     selections in the Team Sheet
- * @param {Object[][]} priorityColumnValues A two dimensional array containing
- *     values of the priority column in the Task Sheet
  */
-function updateDatesPriorityCheckbox(
-    projectStart, currDate, isProjectStartAfterToday, taskSheet, teamTableRange,
-    engineerInfo, codingUnitsPerDay, usernames, taskTable, countEng,
-    tableLength, checkBoxValues, priorityColumnValues) {
+function updateDatesPriorityCheckbox(projectStart, currDate,
+                                     isProjectStartAfterToday, engineerInfo,
+                                     codingUnitsPerDay, usernames, taskTable,
+                                     countEng, tableLength, checkBoxValues) {
+  // Array containing task start dates to display in the start date column of
+  // Task Sheet
   var taskEngineerStartDate =
       initializeTaskStartDate(projectStart, engineerInfo, countEng);
+  // Boolean array storing whether task start date to display is after current
+  // date
   var isTaskEngineerStartDateAfterToday = [];
+  // Array containing task start dates to calculate estimated launch dates in
+  // the launch date column of Task Sheet
   var taskEngineerEndDate = [];
+  // Initialize array taskEngineerEndDate with task start dates to calculate
+  // estimated launch dates
   initializeStartForEndDates(taskEngineerStartDate,
                              isTaskEngineerStartDateAfterToday,
                              taskEngineerEndDate, countEng, currDate);
-  var startDateTaskTable = [];
-  var endDateTaskTable = [];
   for (var rowIndex = 0; rowIndex < tableLength; rowIndex++) {
-    var currentMilestoneNumber = taskTable[rowIndex][10];
-    var ownerSelection = taskTable[rowIndex][0];
-    var rowType = taskTable[rowIndex][12];
-    var isRowTypeTask = (rowType == '0') ? true : false;
+    var currentMilestoneNumber = taskTable[rowIndex][12];  // Column M
+    var ownerSelection = taskTable[rowIndex][2];           // Column C
+    var rowType = taskTable[rowIndex][13];                 // Column N
+    var rowNumber = Number(rowIndex) + 7;
+    var prevRowNumber = Number(rowNumber) - 1;
+    var isRowTypeTask = (rowType > '0') ? true : false;
     // If row type is 'task' and an owner is selected
     if (isRowTypeTask && ownerSelection != '') {
       var engineerIndex = match(ownerSelection, usernames);
-      var estimateWorkDays = taskTable[rowIndex][6];
+      var estimateWorkDays = taskTable[rowIndex][8];
       var startDateTask = taskEngineerStartDate[engineerIndex];
-      startDateTaskTable.push([ startDateTask ]);
+      // Update Start Date
+      taskTable[rowIndex][5] = [ startDateTask ];
+      // Number of actual days required by an engineer to complete the estimated
+      // work days of a task
       var days = Math.ceil(estimateWorkDays / codingUnitsPerDay[engineerIndex]);
+      // If the task start date to be displayed is after current date then the
+      // estimated launch date is independent of the current date and the
+      // remaining work days
       if (isTaskEngineerStartDateAfterToday[engineerIndex]) {
         // Calculate end date using estimated work days
         var endDateTask = addDays(startDateTask, days);
-        endDateTaskTable.push([ endDateTask ]);
+        // Update End Date
+        taskTable[rowIndex][6] = [ endDateTask ];
       } else {
         // Calculate end date using remaining work days
         var remainingWorkDays = taskTable[rowIndex][7];
+        // Start date to calculate estimated launch date
         var startDateToPrintEndDate = taskEngineerEndDate[engineerIndex];
-        var daysPrintEndDate =
+        // Number of actual days required by an engineer to complete the
+        // remaining work days of a task
+        var daysToPrintEndDate =
             Math.ceil(remainingWorkDays / codingUnitsPerDay[engineerIndex]);
-        var endDateTask = addDays(startDateToPrintEndDate, daysPrintEndDate);
-        endDateTaskTable.push([ endDateTask ]);
+        var endDateTask = addDays(startDateToPrintEndDate, daysToPrintEndDate);
+        // Update End Date
+        taskTable[rowIndex][6] = [ endDateTask ];
+        // Update the next task start date (for calculating launch date) of the
+        // engineer to the next day of current task's estimated launch date
         startDateToPrintEndDate = addDays(endDateTask, 1);
         taskEngineerEndDate[engineerIndex] = startDateToPrintEndDate;
       }
+      // Update the next task start date (for display) of the engineer to the
+      // next day of current task's estimated launch date
       startDateTask = addDays(startDateTask, days + 1);
       taskEngineerStartDate[engineerIndex] = startDateTask;
+      // Check the engineer's cell under the current milestone column in Team
+      // Sheet
       checkBoxValues[engineerIndex][currentMilestoneNumber - 1] = "=TRUE";
-    }
-    // If row type is milestone
-    else if (!isRowTypeTask) {
-      startDateTaskTable.push(
+      // Update task number in Column N
+      taskTable[rowIndex][13] = [ '=$N' + prevRowNumber + '+1' ];
+      // Update serial number in Column A
+      taskTable[rowIndex][0] = [
+        '=IF(ISNUMBER(N' + prevRowNumber + '),JOIN(".",M' + prevRowNumber +
+        ',N' + prevRowNumber + '+1))'
+      ];  //['=JOIN(".",M'+prevRowNumber+',N'+prevRowNumber+' +1)'];
+          ////['=IF(ISNUMBER(O'+ prevRowNumber + '),JOIN(".",M'+ prevRowNumber
+          //+',N'+prevRowNumber+'+1))'];
+    } else if (!isRowTypeTask) {
+      // If row type is milestone
+      var nextRowNumber = Number(rowNumber) + 1;
+      // Update Start Date
+      taskTable[rowIndex][5] =
           [ '=if(MINIFS(F:F,M:M,"=' + currentMilestoneNumber +
-            '",O:O,"=0") = 0, "", MINIFS(F:F,M:M,"=' + currentMilestoneNumber +
-            '",O:O,"=0"))' ]);
-      endDateTaskTable.push([ '=if(MAXIFS(G:G,M:M,"=' + currentMilestoneNumber +
-                              '",O:O,"=0") = 0, "", MAXIFS(G:G,M:M,"=' +
-                              currentMilestoneNumber + '",O:O,"=0"))' ]);
-      // First row containing Milestone/ Task data is Row 7
-      var nextRowNumber = Number(rowIndex) + 8;
-      priorityColumnValues[rowIndex] = [
-        '=if(iferror(MATCH("HIGH",ArrayFormula(if(($O' + nextRowNumber +
-        ':$O) = 0,if(($M' + nextRowNumber + ':$M)=' + currentMilestoneNumber +
+            '",N:N,">0") = 0, "", MINIFS(F:F,M:M,"=' + currentMilestoneNumber +
+            '",N:N,">0"))' ];
+      // Update Estimated Launch Date
+      taskTable[rowIndex][6] =
+          [ '=if(MAXIFS(G:G,M:M,"=' + currentMilestoneNumber +
+            '",N:N,">0") = 0, "", MAXIFS(G:G,M:M,"=' + currentMilestoneNumber +
+            '",N:N,">0"))' ];
+      // Update Priority
+      taskTable[rowIndex][4] = [
+        '=if(iferror(MATCH("HIGH",ArrayFormula(if(($N' + nextRowNumber +
+        ':$N) > 0,if(($M' + nextRowNumber + ':$M)=' + currentMilestoneNumber +
         ',$E' + nextRowNumber +
-        ':$E,""),"")),0))>0,"HIGH",if(iferror(MATCH("MEDIUM",ArrayFormula(if(($O' +
-        nextRowNumber + ':$O) = 0,if(($M' + nextRowNumber +
+        ':$E,""),"")),0))>0,"HIGH",if(iferror(MATCH("MEDIUM",ArrayFormula(if(($N' +
+        nextRowNumber + ':$N) > 0,if(($M' + nextRowNumber +
         ':$M)=' + currentMilestoneNumber + ', $E' + nextRowNumber +
-        ':$E,""),"")),0))>0,"MEDIUM", if(iferror(MATCH("LOW",ArrayFormula(if(($O' +
-        nextRowNumber + ':$O) = 0,if(($M' + nextRowNumber +
+        ':$E,""),"")),0))>0,"MEDIUM", if(iferror(MATCH("LOW",ArrayFormula(if(($N' +
+        nextRowNumber + ':$N) > 0,if(($M' + nextRowNumber +
         ':$M)=' + currentMilestoneNumber + ', $E' + nextRowNumber +
         ':$E,""),"")),0))>0, "LOW","")))'
       ];
+      // Update estimated work days
+      taskTable[rowIndex][8] =
+          [ '=SUMIFS(I:I,M:M,"=' + currentMilestoneNumber + '",N:N,">0")' ];
+      // Update completed work days
+      taskTable[rowIndex][10] =
+          [ '=SUMIFS(K:K,M:M,"=' + currentMilestoneNumber + '",N:N,">0")' ];
+      // Update task number in Column N
+      taskTable[rowIndex][13] = [ '0' ];
+    } else {
+      // If row type is task and no owner is selected then
+      // clear Start Date and Estimated Launch Date cells
+      taskTable[rowIndex][5] = [ '' ];
+      taskTable[rowIndex][6] = [ '' ];
+      // Update task number in Column N
+      taskTable[rowIndex][13] = [ '=$N' + prevRowNumber + '+1' ];
+      // Update serial number in Column A
+      taskTable[rowIndex][0] =
+          [ '=IF(ISNUMBER(N' + prevRowNumber + '),JOIN(".",M' + prevRowNumber +
+            ',N' + prevRowNumber + '+1))' ];
     }
-    // If row type is task and no owner is selected
-    else {
-      startDateTaskTable.push([ '' ]);
-      endDateTaskTable.push([ '' ]);
-    }
+    // Update remaining work days for all task and milestone rows
+    taskTable[rowIndex][9] = [ '=$I' + rowNumber + '-$K' + rowNumber ];
   }
-  // Set Start Dates
-  var startDateRange = taskSheet.getRange(7, 6, tableLength, 1);
-  startDateRange.setValues(startDateTaskTable);
-  // Set End Dates
-  var endDateRange = taskSheet.getRange(7, 7, tableLength, 1);
-  endDateRange.setValues(endDateTaskTable);
-  // Clear all the checkbox selections and then set to the updated values
-  teamTableRange.setValue("=FALSE");
-  teamTableRange.setValues(checkBoxValues);
-  // Set Priority Values
-  var priorityColumn = taskSheet.getRange(7, 5, tableLength);
-  priorityColumn.setValues(priorityColumnValues);
 }
 
 /**
- * Updates spreadsheet by resetting values of dates, status, priority in the
- * Task Sheet and the checkboxes in the Team Sheet
+ * Updates spreadsheet by resetting values of start dates, launch dates, status,
+ * priority of task/ milestone rows in the Task Sheet and the checkboxes in the
+ * Team Sheet
  */
 function updateSpreadsheet() {
-  var projectStart = SpreadsheetApp.getActive()
-                         .getSheetByName('Tasks')
-                         .getRange('H2')
-                         .getValue();
+  var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Tasks');
+  var teamSheet = SpreadsheetApp.getActive().getSheetByName('Team');
+  var projectStart = taskSheet.getRange('H2').getValue();
   if (!isValidDate(projectStart)) {
     var message = 'Please enter valid date!';
     displayAlertMessage(message);
@@ -296,40 +325,38 @@ function updateSpreadsheet() {
   }
   var currDate = new Date();
   var isProjectStartAfterToday = currDate < projectStart ? true : false;
-  var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Tasks');
-  var teamSheet = SpreadsheetApp.getActive().getSheetByName('Team');
   var firstEngineerRow = 6;
   var usernameColumn = 3;        // Column C in Team Sheet
   var firstMilestoneColumn = 7;  // Column G in Team Sheet
+  // Number of engineers in the Team
   var countEng = teamSize();
+  // Two dimensional array containing information of the engineers in the Team
+  // Sheet
   var engineerInfo =
       teamSheet.getRange(firstEngineerRow, usernameColumn, countEng, 4)
           .getValues();
+  // Array containing coding units per day of each engineer
   var codingUnitsPerDay = getCodingUnitsPerDay(engineerInfo, countEng);
+  // Array containing username of each engineer
   var usernames = getUsernames(engineerInfo, countEng);
   var firstTaskRow = 7;
-  var ownerColumn = 3;     // Column C in Task Sheet
-  var priorityColumn = 5;  // Column E in Task Sheet
+  // Total number of milestones
   var milestoneNumber = sendMilestoneCount();
+  // Number of rows containing milestone/ task data
   var numRows = getLastDataRow(taskSheet) - firstTaskRow + 1;
-  // Column C to Column O in Task Sheet
-  var taskTable =
-      taskSheet.getRange(firstTaskRow, ownerColumn, numRows, 13).getValues();
-  var teamTableRange =
-      SpreadsheetApp.getActive().getSheetByName('Team').getRange(
-          firstEngineerRow, firstMilestoneColumn, countEng, milestoneNumber);
+  // Column A to Column N in Task Sheet
+  var taskTableRange = taskSheet.getRange(firstTaskRow, 1, numRows, 14);
+  var taskTable = taskTableRange.getValues();
+  // Range containing checkboxes in Team Sheet
+  var teamTableRange = teamSheet.getRange(
+      firstEngineerRow, firstMilestoneColumn, countEng, milestoneNumber);
   var checkBoxValues = initializeArray(countEng, milestoneNumber);
-  var priorityColumnValues = [];
-  var priorityIndex = 2;  // Column index in Task Table
-  for (var i = 0; i < numRows; i++) {
-    priorityColumnValues.push([ taskTable[i][2] ]);
-  }
-  var statusColumn = 8;  // Column G in Task Sheet
-  var statusColumnRange =
-      taskSheet.getRange(firstTaskRow, statusColumn, numRows, 1);
-  updateStatus(taskTable, numRows, statusColumnRange);
+  updateStatus(taskTable, numRows);
   updateDatesPriorityCheckbox(projectStart, currDate, isProjectStartAfterToday,
-                              taskSheet, teamTableRange, engineerInfo,
-                              codingUnitsPerDay, usernames, taskTable, countEng,
-                              numRows, checkBoxValues, priorityColumnValues);
+                              engineerInfo, codingUnitsPerDay, usernames,
+                              taskTable, countEng, numRows, checkBoxValues);
+  taskTableRange.setValues(taskTable);
+  // Clear all the checkbox selections and then set to the updated values
+  teamTableRange.setValue("=FALSE");
+  teamTableRange.setValues(checkBoxValues);
 }
