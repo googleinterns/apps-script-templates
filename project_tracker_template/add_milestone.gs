@@ -98,19 +98,15 @@ function addMilestoneTeam(currentMilestoneNumber) {
  * Adds milestone data in a newly inserted column in the Task Sheet
  * @param {String} milestoneTitle The title of the milestone
  * @param {String} notes Notes and Labels for the milestone
- * @param {Number} previousRowTaskNumber Serial Number of the task in the
- *     previous row
  * @param {Number} lastRow Row Number of the last row containing task or
  *     milestone data
  */
-function addMilestoneTaskSheet(milestoneTitle, notes, previousRowTaskNumber,
-                               lastRow) {
+function addMilestoneTaskSheet(milestoneTitle, notes, lastRow) {
   var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tasks");
   var newMilestoneRow = lastRow + 1;
   var previousMilestoneNumber = taskSheet.getRange(lastRow, 13).getValue();
   var currentMilestoneNumber = previousMilestoneNumber + 1;
   taskSheet.insertRowAfter(lastRow);
-  var prevMilestoneRow = lastRow - previousRowTaskNumber;
   var nextRow = newMilestoneRow + 1;
   // Set values in the newly inserted milestone row
   // Milestone Title
@@ -164,11 +160,11 @@ function insertMilestoneMain(milestoneTitle, desiredLaunchDate, notes) {
   var newMilestoneRow = lastRow + 1;
   var previousMilestoneNumber = taskSheet.getRange(lastRow, 13).getValue();
   var currentMilestoneNumber = previousMilestoneNumber + 1;
-  var currentTaskNumber =
-      getTaskNumber(taskSheet, lastRow, currentMilestoneNumber);
-  var previousRowTaskNumber = currentTaskNumber - 1;
+  // Number of tasks in the previous milestone
+  var prevTaskCount =
+      getTaskNumber(taskSheet, lastRow, previousMilestoneNumber) - 1;
   // Insert Milestone in Task Sheet
-  addMilestoneTaskSheet(milestoneTitle, notes, previousRowTaskNumber, lastRow);
+  addMilestoneTaskSheet(milestoneTitle, notes, lastRow);
   // Insert Milestone in Team Sheet
   addMilestoneTeam(currentMilestoneNumber);
   // Insert Milestone in Summary Sheet
@@ -176,7 +172,7 @@ function insertMilestoneMain(milestoneTitle, desiredLaunchDate, notes) {
                       newMilestoneRow);
   // The first milestone row and a milestone row without tasks above it don't
   // require ungrouping
-  if (currentMilestoneNumber > 1 && previousRowTaskNumber >= 1) {
+  if (currentMilestoneNumber > 1 && prevTaskCount >= 1) {
     ungroupMilestone(taskSheet, newMilestoneRow);
   }
   // Reload sidebar
