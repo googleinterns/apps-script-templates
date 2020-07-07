@@ -228,7 +228,7 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
         taskTable[rowIndex][6] = [ endDateTask ];
       } else {
         // Calculate end date using remaining work days
-        var remainingWorkDays = taskTable[rowIndex][7];
+        var remainingWorkDays = taskTable[rowIndex][9];
         // Start date to calculate estimated launch date
         var startDateToPrintEndDate = taskEngineerEndDate[engineerIndex];
         // Number of actual days required by an engineer to complete the
