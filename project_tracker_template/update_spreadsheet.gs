@@ -211,6 +211,7 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
     if (isRowTypeTask && ownerSelection != '') {
       var engineerIndex = match(ownerSelection, usernames);
       var estimateWorkDays = taskTable[rowIndex][8];
+      // Task start date (to display)
       var startDateTask = taskEngineerStartDate[engineerIndex];
       // Update Start Date
       taskTable[rowIndex][5] = [ startDateTask ];
@@ -242,8 +243,9 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
         startDateToPrintEndDate = addDays(endDateTask, 1);
         taskEngineerEndDate[engineerIndex] = startDateToPrintEndDate;
       }
-      // Update the next task start date (for display) of the engineer to the
-      // next day of current task's estimated launch date
+      // Update the next 'display task start date' of the engineer to the
+      // next day of current task's estimated launch date (calculated using
+      // current 'display task start date' and estimated work days)
       startDateTask = addDays(startDateTask, days + 1);
       taskEngineerStartDate[engineerIndex] = startDateTask;
       // Check the engineer's cell under the current milestone column in Team
@@ -252,12 +254,9 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
       // Update task number in Column N
       taskTable[rowIndex][13] = [ '=$N' + prevRowNumber + '+1' ];
       // Update serial number in Column A
-      taskTable[rowIndex][0] = [
-        '=IF(ISNUMBER(N' + prevRowNumber + '),JOIN(".",M' + prevRowNumber +
-        ',N' + prevRowNumber + '+1))'
-      ];  //['=JOIN(".",M'+prevRowNumber+',N'+prevRowNumber+' +1)'];
-          ////['=IF(ISNUMBER(O'+ prevRowNumber + '),JOIN(".",M'+ prevRowNumber
-          //+',N'+prevRowNumber+'+1))'];
+      taskTable[rowIndex][0] =
+          [ '=IF(ISNUMBER(N' + prevRowNumber + '),JOIN(".",M' + prevRowNumber +
+            ',N' + prevRowNumber + '+1))' ];
     } else if (!isRowTypeTask) {
       // If row type is milestone
       var nextRowNumber = Number(rowNumber) + 1;
