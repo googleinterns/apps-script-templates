@@ -41,14 +41,14 @@ function getLastMilestoneRow(taskSheet, milestoneNumber) {
  * @param {Number} milestoneNumber Serial number of milestone in which task is
  *     to be added
  * @param {String} taskName Name of the task
- * @param {String} assignTextInput Usernames of engineers to whom task is
- *     assigned
+ * @param {String} owner Username of engineer to whom task is assigned
+ * @param {String} priorityInput Priority of the task
  * @param {Number} estimatedWorkDays Estimated coding days required for the task
  * @param {Number} engDaysCompleted Coding days already completed for the task
  * @param {String} clLink CL Link of the task
  * @param {String} notes Notes for the task
  */
-function insertTask(milestoneNumber, taskName, assignTextInput,
+function insertTask(milestoneNumber, taskName, owner, priorityInput,
                     estimatedWorkDays, engDaysCompleted, clLink, notes) {
   var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tasks");
   // Get row number of last row under the given milestone
@@ -65,20 +65,15 @@ function insertTask(milestoneNumber, taskName, assignTextInput,
   // Task title
   var titleCell = taskSheet.getRange(newTaskRow, 2);  // Column B
   titleCell.setValue(taskName);
-  // Usernames of engineers to whom task is assigned
-  // to be updated
-  var assignedToCell = taskSheet.getRange(newTaskRow, 4);  // Column D
-  assignedToCell.setValue(assignTextInput);
-  // Start date of task
-  var startDateCell = taskSheet.getRange(newTaskRow, 6);  // Column F
-  // to be updated
-  startDateCell.setFormula("= F" + lastRow);
-  // Estimated launch date of the task
-  var estimatedLaunchDate = taskSheet.getRange(newTaskRow, 7);  // Column G
-  // to be updated
-  estimatedLaunchDate.setFormula(
-      "= F" + newTaskRow + "+ getNumDaysForLaunchMilestone(" + milestoneNumber +
-      " ,F" + newTaskRow + ", I" + newTaskRow + " , EngineerInfoMilestones)");
+  // Owner
+  var ownerCell = taskSheet.getRange(newTaskRow, 3);  // Column C
+  ownerCell.setValue(owner);
+  // CL Link of the task
+  var cellCL = taskSheet.getRange(newTaskRow, 4);  // Column D
+  cellCL.setValue(clLink);
+  // Priority of task
+  var priorityCell = taskSheet.getRange(newTaskRow, 5);  // Column E
+  priorityCell.setValue(priorityInput);
   // Estimated coding days required for the task
   var estimatedDaysCell = taskSheet.getRange(newTaskRow, 9);  // Column I
   estimatedDaysCell.setValue(estimatedWorkDays);
@@ -88,15 +83,16 @@ function insertTask(milestoneNumber, taskName, assignTextInput,
   // Coding days already completed for the task
   var completedDaysCell = taskSheet.getRange(newTaskRow, 11);  // Column K
   completedDaysCell.setValue(engDaysCompleted);
-  // CL Link of the task
-  var cellCL = taskSheet.getRange(newTaskRow, 12);  // Column L
-  cellCL.setValue(clLink);
+  // Labels and Notes
+  var labelsNotes = taskSheet.getRange(newTaskRow, 12);  // Column L
+  labelsNotes.setValue(notes);
   // Milestone in which the task is added
   var milestoneCell = taskSheet.getRange(newTaskRow, 13);  // Column M
   milestoneCell.setValue(milestoneNumber);
-  // Labels and Notes
-  var labelsNotes = taskSheet.getRange(newTaskRow, 14);  // Column N
-  labelsNotes.setValue(notes);
+  // Task Number
+  var taskNumberCell = taskSheet.getRange(newTaskRow, 14);  // Column N
+  var taskNumber = '=$N' + lastRow + '+1';
+  taskNumberCell.setValue(taskNumberCell);
   // Group the first task row under a milestone
   // New rows inserted below a grouped row automatically get included in the
   // grouping.
@@ -105,4 +101,6 @@ function insertTask(milestoneNumber, taskName, assignTextInput,
   }
   // Reload sidebar
   showSidebar();
+  // Update spreadsheet values
+  updateSpreadsheet();
 }
