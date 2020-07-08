@@ -1,6 +1,7 @@
 /**
  * Makes a backup copy of the current spreadsheet.
- * Names it appropriately and displays the backup copy's URL in an alert box.
+ * Names it appropriately and provides the backup copy's URL as a hyperlink in a
+ * modal dialog box.
  */
 function backup() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -9,6 +10,11 @@ function backup() {
   var backupSpreadsheet =
       spreadsheet.copy("Backup - " + spreadsheetName + ' - ' + now);
   var spreadsheetUrl = backupSpreadsheet.getUrl();
-  var message = "Backup copy generated. Access at - " + spreadsheetUrl;
-  displayAlertMessage(message);
+  var htmlOutput = HtmlService
+                       .createHtmlOutput(
+                           '<html><a href="' + spreadsheetUrl +
+                           '" target=_blank>Open Backup Spreadsheet</a></html>')
+                       .setWidth(350)
+                       .setHeight(70);
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Backup Copy generated!');
 }
