@@ -2,6 +2,8 @@
  * Makes a backup copy of the current spreadsheet.
  * Names it appropriately and provides the backup copy's URL as a hyperlink in a
  * modal dialog box.
+ * The backup spreadsheet opens in a new tab when the link in the
+ * modal dialog box is clicked.
  */
 function backup() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
