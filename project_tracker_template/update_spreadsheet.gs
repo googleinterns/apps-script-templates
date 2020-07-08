@@ -128,13 +128,13 @@ function initializeTaskStartDate(projectStart, engineerInfo, countEng) {
 
 /**
  * Sets the initial task start dates (to be used for calculating the estimated
- * end date of the task for each engineer) in 'taskEngineerEndDate' 
- * The initial task start dates for these calculations is maximum of the 
- * current date and the displayed task start date for each engineer (where 
- * displayed task start date is maximum of project start date and engineer's 
- * start date) 
- * Sets corresponding value in 'isTaskEngineerStartDateAfterToday' array to 
- * 'true' if the displayed task start date for the engineer is greater than 
+ * end date of the task for each engineer) in 'taskEngineerEndDate'.
+ * The initial task start dates for these calculations is maximum of the
+ * current date and the displayed task start date for each engineer (where
+ * displayed task start date is maximum of project start date and engineer's
+ * start date)
+ * Sets corresponding value in 'isTaskEngineerStartDateAfterToday' array to
+ * 'true' if the displayed task start date for the engineer is greater than
  * current date else 'false'
  * @param {Date[]} taskEngineerStartDate Date array containing displayed task
  *     start dates of each engineer
@@ -205,7 +205,6 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
     var ownerSelection = taskTable[rowIndex][2];           // Column C
     var rowType = taskTable[rowIndex][13];                 // Column N
     var rowNumber = Number(rowIndex) + 7;
-    var prevRowNumber = Number(rowNumber) - 1;
     var isRowTypeTask = (rowType > '0') ? true : false;
     // If row type is 'task' and an owner is selected
     if (isRowTypeTask && ownerSelection != '') {
@@ -252,11 +251,14 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
       // Sheet
       checkBoxValues[engineerIndex][currentMilestoneNumber - 1] = "=TRUE";
       // Update task number in Column N
-      taskTable[rowIndex][13] = [ '=$N' + prevRowNumber + '+1' ];
+      taskTable[rowIndex][13] = [
+        '=IF(ISNUMBER(INDIRECT("R[-1]C[0]", false)),INDIRECT("R[-1]C[0]", false)+1,1)'
+      ];
       // Update serial number in Column A
-      taskTable[rowIndex][0] =
-          [ '=IF(ISNUMBER(N' + prevRowNumber + '),JOIN(".",M' + prevRowNumber +
-            ',N' + prevRowNumber + '+1))' ];
+      taskTable[rowIndex][0] = [
+        '=IF(ISNUMBER(INDIRECT("R[-1]C[12]", false)),JOIN(".",INDIRECT("R[-1]C[12]", false),INDIRECT("R[-1]C[13]", false)+1))'
+      ];
+
     } else if (!isRowTypeTask) {
       // If row type is milestone
       var nextRowNumber = Number(rowNumber) + 1;
@@ -297,11 +299,13 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
       taskTable[rowIndex][5] = [ '' ];
       taskTable[rowIndex][6] = [ '' ];
       // Update task number in Column N
-      taskTable[rowIndex][13] = [ '=$N' + prevRowNumber + '+1' ];
+      taskTable[rowIndex][13] = [
+        '=IF(ISNUMBER(INDIRECT("R[-1]C[0]", false)),INDIRECT("R[-1]C[0]", false)+1,1)'
+      ];
       // Update serial number in Column A
-      taskTable[rowIndex][0] =
-          [ '=IF(ISNUMBER(N' + prevRowNumber + '),JOIN(".",M' + prevRowNumber +
-            ',N' + prevRowNumber + '+1))' ];
+      taskTable[rowIndex][0] = [
+        '=IF(ISNUMBER(INDIRECT("R[-1]C[12]", false)),JOIN(".",INDIRECT("R[-1]C[12]", false),INDIRECT("R[-1]C[13]", false)+1))'
+      ];
     }
     // Update remaining work days for all task and milestone rows
     taskTable[rowIndex][9] = [ '=$I' + rowNumber + '-$K' + rowNumber ];
