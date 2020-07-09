@@ -313,19 +313,66 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
 }
 
 /**
+ * Updates all the custom formulas in the Timeline sheet
+ * @param {Object[][]} ganttTableValues A two dimensional array containing
+ *     information about tasks and milestones
+ * @param {Number} numRows Number of rows containing milestone/ task data
+ */
+function updateGantt(ganttTableValues, numRows) {
+  for (var i = 0; i <= numRows; i++) {
+    for (var j = 0; j < 13; j++) {
+      ganttTableValues[i][j] = [ '' ];
+    }
+  }
+  ganttTableValues[0][1] = [ '=Tasks!B1' ];
+  ganttTableValues[0][2] = [ '=Tasks!H2' ];
+  ganttTableValues[0][3] = [ '=Tasks!H4' ];
+  ganttTableValues[0][4] = [
+    '=SPARKLINE({split(rept("7,",FLOOR((int(D6)-int(C6))/7)),","),mod(int(D6)-int(C6),7)},{"charttype","bar";"color1","white";"color2","lightblue"})'
+  ];
+  ganttTableValues[0][8] = [ 'Milestone' ];
+  ganttTableValues[0][9] = [ '#9fc5e8' ];
+  ganttTableValues[1][0] = [ '=ArrayFormula(Tasks!A7:A)' ];
+  ganttTableValues[1][1] = [ '=ArrayFormula(Tasks!B7:B)' ];
+  ganttTableValues[1][2] = [ '=ArrayFormula(Tasks!F7:F)' ];
+  ganttTableValues[1][3] = [ '=ArrayFormula(Tasks!G7:G)' ];
+  ganttTableValues[1][5] = [ '=ArrayFormula(Tasks!H7:H)' ];
+  ganttTableValues[1][6] = [ '=ArrayFormula(Tasks!C7:C)' ];
+  ganttTableValues[1][8] = [ '=ArrayFormula(Team!C6:C25)' ];
+  ganttTableValues[1][9] = [ '=ArrayFormula(Team!U6:U25)' ];
+  for (var i = 1; i <= numRows; i++) {
+    var rowNumber = Number(i) + 6;
+    ganttTableValues[i][11] = [
+      '=iferror(INDIRECT(if(iferror(MATCH($G' + rowNumber +
+      ',ArrayFormula($I$7:$I$21),0),-1)>0,JOIN("","$J",TEXT(ADD(6,(MATCH($G' +
+      rowNumber + ',ArrayFormula($I$7:$I$21)))),"###")))),"#9fc5e8")'
+    ];
+    ganttTableValues[i][4] =
+        [ '=SPARKLINE({int(C' + rowNumber + ')-int($C$6),int(D' + rowNumber +
+          ')-int(C' + rowNumber +
+          ')},{"charttype","bar";"color1","white";"color2",$L' + rowNumber +
+          ';"max",int($D$6)-int($C$6)})' ];
+  }
+}
+
+/**
  * Updates spreadsheet by resetting values of start dates, launch dates, status,
  * priority of task/ milestone rows in the Task Sheet and the checkboxes in the
  * Team Sheet
  */
 function updateSpreadsheet() {
-  var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Tasks');
-  var teamSheet = SpreadsheetApp.getActive().getSheetByName('Team');
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var taskSheet = spreadsheet.getSheetByName('Tasks');
+  var teamSheet = spreadsheet.getSheetByName('Team');
+  var summarySheet = spreadsheet.getSheetByName('Summary');
+  var ganttSheet = spreadsheet.getSheetByName('Timeline');
   var projectStart = taskSheet.getRange('H2').getValue();
   if (!isValidDate(projectStart)) {
     var message = 'Please enter valid date!';
     displayAlertMessage(message);
     return;
   }
+  // Add error message for 0 coding days per week
   var currDate = new Date();
   var isProjectStartAfterToday = currDate < projectStart ? true : false;
   var firstEngineerRow = 6;
@@ -350,6 +397,8 @@ function updateSpreadsheet() {
   // Column A to Column N in Task Sheet
   var taskTableRange = taskSheet.getRange(firstTaskRow, 1, numRows, 14);
   var taskTable = taskTableRange.getValues();
+  var ganttTableRange = ganttSheet.getRange(6, 1, numRows + 1, 13);
+  var ganttTableValues = ganttTableRange.getValues();
   // Range containing checkboxes in Team Sheet
   var teamTableRange = teamSheet.getRange(
       firstEngineerRow, firstMilestoneColumn, countEng, milestoneNumber);
@@ -362,4 +411,6 @@ function updateSpreadsheet() {
   // Clear all the checkbox selections and then set to the updated values
   teamTableRange.setValue("=FALSE");
   teamTableRange.setValues(checkBoxValues);
+  updateGantt(ganttTableValues, numRows);
+  ganttTableRange.setValues(ganttTableValues);
 }
