@@ -454,7 +454,6 @@ function updateSpreadsheet() {
     return;
   }
   // Update values in Gantt Chart
-  //  var ganttTableRange = ganttSheet.getRange(6,1,30,13);
   var ganttTableRange = ganttSheet.getRange('A6:M');
   var ganttTableValues = ganttTableRange.getValues();
   updateGantt(ganttTableValues, numRows);
