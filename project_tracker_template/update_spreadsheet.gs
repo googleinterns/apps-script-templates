@@ -38,6 +38,9 @@ function addDays(date, days) {
 function getCodingUnitsPerDay(engineerInfo, countEng) {
   var codingUnitsPerDay = [];
   for (var i = 0; i < countEng; i++) {
+    if (engineerInfo[i][1] <= 0) {
+      return;
+    }
     var codingUnits = engineerInfo[i][1] / 7;
     codingUnitsPerDay.push(codingUnits);
   }
@@ -90,11 +93,17 @@ function updateStatus(taskTable, tableLength) {
     var remainingDays = taskTable[i][9];   // Column J
     var completedDays = taskTable[i][10];  // Column K
     // Update status cell in Column H in the Task Sheet
+    // Clear previous value from status cell
+    taskTable[i][7] = [ '' ];
     if (estimatedDays == '') {
-      taskTable[i][7] = [ '' ];
-    } else if (completedDays == '0' || completedDays == '') {
+      // Status remains empty if estimate days are not input by the user/ equals
+      // 0
+      continue;
+    } else if (completedDays == '') {
+      // Status when completed days are not input by the user/ equals 0
       taskTable[i][7] = [ 'Not Started' ];
     } else if (remainingDays == '0') {
+      // Status when remaining days are 0
       taskTable[i][7] = [ 'Done' ];
     } else {
       taskTable[i][7] = [ 'In Progress' ];
@@ -162,8 +171,8 @@ function initializeStartForEndDates(taskEngineerStartDate,
 
 /**
  * Updates start date, estimated launch date, priority of a task/ milestone in
- * the Task sheet Updates checkboxes reflecting milestone assignment in the Team
- * Sheet
+ * the Task sheet 
+ * Updates checkboxes reflecting milestone assignment in the Team Sheet
  * @param {Date} projectStart Date object containing start date of the project
  * @param {Date} currDate Date object containing current date of the project
  * @param {Boolean} isProjectStartAfterToday Boolean value to store whether
@@ -319,39 +328,76 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
  * @param {Number} numRows Number of rows containing milestone/ task data
  */
 function updateGantt(ganttTableValues, numRows) {
-  for (var i = 0; i <= numRows; i++) {
+  for (var i = 0; i < ganttTableValues.length; i++) {
     for (var j = 0; j < 13; j++) {
       ganttTableValues[i][j] = [ '' ];
     }
   }
+  // Set Project Title
   ganttTableValues[0][1] = [ '=Tasks!B1' ];
+  // Set Project Start Date
   ganttTableValues[0][2] = [ '=Tasks!H2' ];
+  // Set Estimated Project Launch Date
   ganttTableValues[0][3] = [ '=Tasks!H4' ];
+  // Set custom formula for week wise representation of the project timeline
   ganttTableValues[0][4] = [
-    '=SPARKLINE({split(rept("7,",FLOOR((int(D6)-int(C6))/7)),","),mod(int(D6)-int(C6),7)},{"charttype","bar";"color1","white";"color2","lightblue"})'
+    '=iferror(SPARKLINE({split(rept("7,",FLOOR((int(D6)-int(C6))/7)),","),mod(int(D6)-int(C6),7)},{"charttype","bar";"color1","white";"color2","lightblue"}),"")'
   ];
   ganttTableValues[0][8] = [ 'Milestone' ];
+  // Set Task Serial Number from Task Sheet
+  ganttTableValues[1][0] = [ '=ArrayFormula(Tasks!$A$7:$A)' ];
+  // Set Task/ Milestone Title from Task Sheet
+  ganttTableValues[1][1] = [ '=ArrayFormula(Tasks!$B$7:$B)' ];
+  // Set Task/ Milestone Start Date from Task Sheet
+  ganttTableValues[1][2] = [ '=ArrayFormula(Tasks!$F$7:$F)' ];
+  // Set Task/ Milestone Estimated Launch Date from Task Sheet
+  ganttTableValues[1][3] = [ '=ArrayFormula(Tasks!$G$7:$G)' ];
+  // Set Task/ Milestone Status from Task Sheet
+  ganttTableValues[1][5] = [ '=ArrayFormula(Tasks!$H$7:$H)' ];
+  // Set Task/ Milestone Owner from Task Sheet
+  ganttTableValues[1][6] = [ '=ArrayFormula(Tasks!$C$7:$C)' ];
+  // Set the usernames of team members in the Color Legend Block
+  ganttTableValues[1][8] = [ '=ArrayFormula(Team!$C$6:$C$25)' ];
+  // Set the Task Number in Column M (hidden) of the Tasks/ Milestones from the
+  // Task Sheet
+  ganttTableValues[1][12] = [ '=ArrayFormula(Tasks!$N$7:$N)' ];
+  // Color Legend for Gantt Chart
   ganttTableValues[0][9] = [ '#9fc5e8' ];
-  ganttTableValues[1][0] = [ '=ArrayFormula(Tasks!A7:A)' ];
-  ganttTableValues[1][1] = [ '=ArrayFormula(Tasks!B7:B)' ];
-  ganttTableValues[1][2] = [ '=ArrayFormula(Tasks!F7:F)' ];
-  ganttTableValues[1][3] = [ '=ArrayFormula(Tasks!G7:G)' ];
-  ganttTableValues[1][5] = [ '=ArrayFormula(Tasks!H7:H)' ];
-  ganttTableValues[1][6] = [ '=ArrayFormula(Tasks!C7:C)' ];
-  ganttTableValues[1][8] = [ '=ArrayFormula(Team!C6:C25)' ];
-  ganttTableValues[1][9] = [ '=ArrayFormula(Team!U6:U25)' ];
+  ganttTableValues[1][9] = [ '#3366CC' ];
+  ganttTableValues[2][9] = [ '#DC3912' ];
+  ganttTableValues[3][9] = [ '#FF9900' ];
+  ganttTableValues[4][9] = [ '#43ff43' ];
+  ganttTableValues[5][9] = [ '#990099' ];
+  ganttTableValues[6][9] = [ '#ffc66f' ];
+  ganttTableValues[7][9] = [ '#0099C6' ];
+  ganttTableValues[8][9] = [ '#DD4477' ];
+  ganttTableValues[9][9] = [ '#66AA00' ];
+  ganttTableValues[10][9] = [ '#B82E2E' ];
+  ganttTableValues[11][9] = [ '#316395' ];
+  ganttTableValues[12][9] = [ '#994499' ];
+  ganttTableValues[13][9] = [ '#22AA99' ];
+  ganttTableValues[14][9] = [ '#AAAA11' ];
+  ganttTableValues[15][9] = [ '#6633CC' ];
+  ganttTableValues[16][9] = [ '#E67300' ];
+  ganttTableValues[17][9] = [ '#8B0707' ];
+  ganttTableValues[18][9] = [ '#329262' ];
+  ganttTableValues[19][9] = [ '#5574A6' ];
+  ganttTableValues[20][9] = [ '#3B3EAC' ];
   for (var i = 1; i <= numRows; i++) {
     var rowNumber = Number(i) + 6;
+    // Evaluate color code for each task in Column L (hidden) using the color
+    // legend and owner column
     ganttTableValues[i][11] = [
       '=iferror(INDIRECT(if(iferror(MATCH($G' + rowNumber +
       ',ArrayFormula($I$7:$I$21),0),-1)>0,JOIN("","$J",TEXT(ADD(6,(MATCH($G' +
       rowNumber + ',ArrayFormula($I$7:$I$21)))),"###")))),"#9fc5e8")'
     ];
+    // Create bar charts in Column E using the evaluated color codes in column L
     ganttTableValues[i][4] =
-        [ '=SPARKLINE({int(C' + rowNumber + ')-int($C$6),int(D' + rowNumber +
-          ')-int(C' + rowNumber +
+        [ '=iferror(SPARKLINE({int(C' + rowNumber + ')-int($C$6),int(D' +
+          rowNumber + ')-int(C' + rowNumber +
           ')},{"charttype","bar";"color1","white";"color2",$L' + rowNumber +
-          ';"max",int($D$6)-int($C$6)})' ];
+          ';"max",int($D$6)-int($C$6)}),"")' ];
   }
 }
 
@@ -367,19 +413,59 @@ function updateSpreadsheet() {
   var summarySheet = spreadsheet.getSheetByName('Summary');
   var ganttSheet = spreadsheet.getSheetByName('Timeline');
   var projectStart = taskSheet.getRange('H2').getValue();
+  // Display alert if the project start date is invalid
   if (!isValidDate(projectStart)) {
     var message = 'Please enter valid date!';
     displayAlertMessage(message);
     return;
   }
-  // Add error message for 0 coding days per week
+  // Set Milestone Count
+  taskSheet.getRange('E2').setValue('=MAX(M7:M)');
+  // Set Estimated Launch Date of the Project
+  taskSheet.getRange('H4').setValue('=if(MAX(G7:G)=0,"",MAX(G7:G))');
+  // Set Team Size in Team Sheet
+  teamSheet.getRange('D2').setValue('=MAX(A6:A)');
+  // Set Team Size in Tasks Sheet
+  taskSheet.getRange('E4').setValue('=Team!D2');
+  // Set Dropdown List for Owner Column in Tasks Sheet
+  taskSheet.getRange('$C$7:$C').setDataValidation(
+      SpreadsheetApp.newDataValidation()
+          .setAllowInvalid(true)
+          .requireValueInRange(spreadsheet.getRange('Team!$C$6:$C$30'), true)
+          .build());
+  // Set Dropdown List for Owner Column in Timeline Sheet
+  ganttSheet.getRange('$G$7:$G').setDataValidation(
+      SpreadsheetApp.newDataValidation()
+          .setAllowInvalid(true)
+          .requireValueInRange(spreadsheet.getRange('Team!$C$6:$C$30'), true)
+          .build());
   var currDate = new Date();
   var isProjectStartAfterToday = currDate < projectStart ? true : false;
   var firstEngineerRow = 6;
   var usernameColumn = 3;        // Column C in Team Sheet
   var firstMilestoneColumn = 7;  // Column G in Team Sheet
+  var firstTaskRow = 7;
+  // Total number of milestones
+  var milestoneNumber = sendMilestoneCount();
+  // Number of rows containing task/ milestone data
+  var numRows = getLastDataRow(taskSheet) - firstTaskRow + 1;
+  if (isNaN(numRows) || numRows <= 0) {
+    Logger.log('numRows is NaN or <=0');
+    return;
+  }
+  // Update values in Gantt Chart
+  //  var ganttTableRange = ganttSheet.getRange(6,1,30,13);
+  var ganttTableRange = ganttSheet.getRange('A6:M');
+  var ganttTableValues = ganttTableRange.getValues();
+  updateGantt(ganttTableValues, numRows);
+  ganttTableRange.setValues(ganttTableValues);
   // Number of engineers in the Team
   var countEng = teamSize();
+  // Team size should be greater than 0 for further updates in the spreadsheet
+  if (countEng == 0) {
+    Logger.log('Team Size is 0');
+    return;
+  }
   // Two dimensional array containing information of the engineers in the Team
   // Sheet
   var engineerInfo =
@@ -387,18 +473,16 @@ function updateSpreadsheet() {
           .getValues();
   // Array containing coding units per day of each engineer
   var codingUnitsPerDay = getCodingUnitsPerDay(engineerInfo, countEng);
+  if (!codingUnitsPerDay) {
+    var message = 'Coding days per week should be greater than zero';
+    displayAlertMessage(message);
+    return;
+  }
   // Array containing username of each engineer
   var usernames = getUsernames(engineerInfo, countEng);
-  var firstTaskRow = 7;
-  // Total number of milestones
-  var milestoneNumber = sendMilestoneCount();
-  // Number of rows containing milestone/ task data
-  var numRows = getLastDataRow(taskSheet) - firstTaskRow + 1;
   // Column A to Column N in Task Sheet
   var taskTableRange = taskSheet.getRange(firstTaskRow, 1, numRows, 14);
   var taskTable = taskTableRange.getValues();
-  var ganttTableRange = ganttSheet.getRange(6, 1, numRows + 1, 13);
-  var ganttTableValues = ganttTableRange.getValues();
   // Range containing checkboxes in Team Sheet
   var teamTableRange = teamSheet.getRange(
       firstEngineerRow, firstMilestoneColumn, countEng, milestoneNumber);
@@ -411,6 +495,4 @@ function updateSpreadsheet() {
   // Clear all the checkbox selections and then set to the updated values
   teamTableRange.setValue("=FALSE");
   teamTableRange.setValues(checkBoxValues);
-  updateGantt(ganttTableValues, numRows);
-  ganttTableRange.setValues(ganttTableValues);
 }
