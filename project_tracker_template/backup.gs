@@ -8,9 +8,10 @@
 function backup() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var now = new Date();
+  var date = getFormattedDate(now);
   var spreadsheetName = spreadsheet.getName();
   var backupSpreadsheet =
-      spreadsheet.copy("Backup - " + spreadsheetName + ' - ' + now);
+      spreadsheet.copy("Backup - " + spreadsheetName + ' - ' + date);
   var spreadsheetUrl = backupSpreadsheet.getUrl();
   var htmlOutput = HtmlService
                        .createHtmlOutput(
