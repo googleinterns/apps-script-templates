@@ -58,9 +58,9 @@ function addMilestoneSummary(desiredLaunchDate, currentMilestoneNumber,
   var tasksWithNoDaysA1 = tasksWithNoDaysCell.getA1Notation();
   // Days ahead/behind (+/-)
   var daysAheadCell = summarySheet.getRange(13, newMilestoneColumn);
-  daysAheadCell.setFormula('=if(OR(' + remainingDaysA1 + '>0,' +
-                           tasksWithNoDaysA1 + '>0),' + desiredLaunchDateA1 +
-                           '-' + estLaunchDateA1 + ',"DONE")');
+  daysAheadCell.setFormula(
+      '=if(OR(' + remainingDaysA1 + '>0,' + tasksWithNoDaysA1 + '>0), FLOOR(' +
+      desiredLaunchDateA1 + '-' + estLaunchDateA1 + ') ,"DONE")');
   // Remaining Weeks
   var remainingWeeksCell = summarySheet.getRange(14, newMilestoneColumn);
   remainingWeeksCell.setFormula("=max(CEILING((" + desiredLaunchDateA1 +
@@ -88,10 +88,12 @@ function addMilestoneTeam(currentMilestoneNumber) {
   var title = 'Milestone ' + currentMilestoneNumber;
   titleCell.setValue(title);
   // Add checkboxes in the new milestone column
-  var checkBoxRange =
-      teamSheet.getRange(firstEngineerRow, newMilestoneColumn, teamCount, 1);
-  var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
-  checkBoxRange.setDataValidation(rule);
+  if (teamCount > 0) {
+    var checkBoxRange =
+        teamSheet.getRange(firstEngineerRow, newMilestoneColumn, teamCount, 1);
+    var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+    checkBoxRange.setDataValidation(rule);
+  }
 }
 
 /**
@@ -100,14 +102,22 @@ function addMilestoneTeam(currentMilestoneNumber) {
  * @param {String} notes Notes and Labels for the milestone
  * @param {Number} lastRow Row Number of the last row containing task or
  *     milestone data
+ * @param {Number} previousMilestoneNumber Previous number of milestones in the
+ *     spreadsheet
  */
-function addMilestoneTaskSheet(milestoneTitle, notes, lastRow) {
+function addMilestoneTaskSheet(milestoneTitle, notes, lastRow,
+                               previousMilestoneNumber) {
   var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tasks");
   var newMilestoneRow = lastRow + 1;
-  var previousMilestoneNumber = taskSheet.getRange(lastRow, 13).getValue();
+  // The formatting and data validation settings of the newly inserted row are
+  // copied from the row before/ after which it is inserted depending on the row
+  // insertion method used ( insertRowBefore() or insertRowAfter() )
+  if (previousMilestoneNumber == 0) {
+    taskSheet.insertRowBefore(newMilestoneRow);
+  } else {
+    taskSheet.insertRowAfter(lastRow);
+  }
   var currentMilestoneNumber = previousMilestoneNumber + 1;
-  taskSheet.insertRowAfter(lastRow);
-  var nextRow = newMilestoneRow + 1;
   // Set values in the newly inserted milestone row
   // Milestone Title
   var titleCell = taskSheet.getRange(newMilestoneRow, 2);  // Column B
@@ -128,7 +138,7 @@ function addMilestoneTaskSheet(milestoneTitle, notes, lastRow) {
   var estimatedDaysCell = taskSheet.getRange(newMilestoneRow, 9);  // Column I
   estimatedDaysCell.setFormula('=SUMIFS(I:I,M:M,"=' + currentMilestoneNumber +
                                '",N:N,">0")');
-  //  Remaining Coding days
+  // Remaining Coding days
   var remainingDaysCell = taskSheet.getRange(newMilestoneRow, 10);  // Column J
   remainingDaysCell.setFormula("= $I" + newMilestoneRow + "- $K" +
                                newMilestoneRow);
@@ -156,15 +166,18 @@ function addMilestoneTaskSheet(milestoneTitle, notes, lastRow) {
  */
 function insertMilestoneMain(milestoneTitle, desiredLaunchDate, notes) {
   var taskSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tasks");
-  var lastRow = getLastDataRow(taskSheet);
+  // Get previous milestone count
+  var previousMilestoneNumber = sendMilestoneCount();
+  // Get last row containing data in the Task Sheet
+  var lastRow = (previousMilestoneNumber > 0 ? getLastDataRow(taskSheet) : 6);
   var newMilestoneRow = lastRow + 1;
-  var previousMilestoneNumber = taskSheet.getRange(lastRow, 13).getValue();
   var currentMilestoneNumber = previousMilestoneNumber + 1;
   // Number of tasks in the previous milestone
   var prevTaskCount =
       getTaskNumber(taskSheet, lastRow, previousMilestoneNumber) - 1;
   // Insert Milestone in Task Sheet
-  addMilestoneTaskSheet(milestoneTitle, notes, lastRow);
+  addMilestoneTaskSheet(milestoneTitle, notes, lastRow,
+                        previousMilestoneNumber);
   // Insert Milestone in Team Sheet
   addMilestoneTeam(currentMilestoneNumber);
   // Insert Milestone in Summary Sheet
@@ -175,8 +188,7 @@ function insertMilestoneMain(milestoneTitle, desiredLaunchDate, notes) {
   if (currentMilestoneNumber > 1 && prevTaskCount >= 1) {
     ungroupMilestone(taskSheet, newMilestoneRow);
   }
-  // Reload sidebar
-  showSidebar();
   // Update spreadsheet values
   updateSpreadsheet();
+  return true;
 }
