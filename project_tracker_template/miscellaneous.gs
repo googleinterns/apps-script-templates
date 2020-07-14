@@ -65,6 +65,7 @@ function sendMilestoneCount() {
   var countMilestones = taskSheet.getRange('E2').getValue();
   return countMilestones;
 }
+
 /**
  * Returns the number of engineers working on the project
  * @return {Number} The number of engineers working on the project
@@ -83,7 +84,11 @@ function teamSize() {
 function sendTeamUsernames() {
   var teamSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Team");
   var teamCount = teamSheet.getRange('D2').getValue();
-  var usernames = teamSheet.getRange(6, 3, teamCount).getValues();
+  var usernames = [];
+  if (teamCount == 0) {
+    return usernames;
+  }
+  usernames = teamSheet.getRange(6, 3, teamCount).getValues();
   return usernames;
 }
 
@@ -94,6 +99,9 @@ function sendTeamUsernames() {
  * @return {Number} The task number of the new task in the given milestone
  */
 function getTaskNumber(taskSheet, lastRow, milestoneNumber) {
+  if (milestoneNumber == 0) {
+    return 1;
+  }
   var numberPrevious = taskSheet.getRange(lastRow, 14).getValue();
   var currentTaskNumber = Number(numberPrevious) + 1;
   return currentTaskNumber;
