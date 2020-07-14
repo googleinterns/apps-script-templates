@@ -58,6 +58,9 @@ function insertTask(milestoneNumber, taskName, owner, priorityInput,
   var currentTaskNumber = getTaskNumber(taskSheet, lastRow, milestoneNumber);
   var TaskColA = milestoneNumber + "." + currentTaskNumber;
   var isFirstTask = (currentTaskNumber == 1 ? true : false);
+  var a1Row = newTaskRow + ':' + newTaskRow;
+  var newRowRange = taskSheet.getRange(a1Row);
+  newRowRange.setBackground(null);
   // Set values in the newly inserted row
   // Task number
   var taskNumber = taskSheet.getRange(newTaskRow, 1);  // Column A
@@ -99,8 +102,7 @@ function insertTask(milestoneNumber, taskName, owner, priorityInput,
   if (isFirstTask) {
     groupTask(taskSheet, newTaskRow);
   }
-  // Reload sidebar
-  showSidebar();
   // Update spreadsheet values
   updateSpreadsheet();
+  return true;
 }
