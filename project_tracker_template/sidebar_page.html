@@ -171,6 +171,7 @@
               <label for="owner-input">Select Owner (Username): </label>
               <br>
               <select id="task-owner" name="select-list-owner">
+                <option value="0">Select Owner...</option>
               </select>
               <br>
               <br>
@@ -203,7 +204,7 @@
 
       /**
        * Add options in the dropdown list under 'Select Milestone' in the Add Task
-       * card 
+       * card
        * Options added reflect the current number of milestones in the spreadsheet
        * @param {Number} milestoneCount The current number of milestones in the
        *     spreadsheet
@@ -238,10 +239,9 @@
        */
       function onSuccessUsernames(usernames) {
         document.getElementById('task-owner').innerHTML = "";
-        if (usernames.length == 0) {
-          var message = "Please add atleast 1 engineer to add a task";
-          google.script.run.displayAlertMessage(message);
-        } else {
+        document.getElementById('task-owner').innerHTML +=
+            '<option value="0">Select Owner...</option>';
+        if (usernames.length > 0) {
           for (var engineerIndex = 0; engineerIndex < usernames.length;
                engineerIndex++) {
             document.getElementById('task-owner').innerHTML +=
@@ -253,7 +253,7 @@
 
       /**
        * Get the usernames of all the team members from the server-side
-       * sendTeamUsernames function 
+       * sendTeamUsernames function
        * The server function returns the string array to the client as
        * a parameter passed to the onSuccessUsernames function
        */
@@ -269,9 +269,15 @@
         if (milestoneNumber == 0) {
           var message = "Please select a milestone to add a task";
           google.script.run.displayAlertMessage(message);
+          return;
+        }
+        var owner = document.getElementById("task-owner").value;
+        if (owner == 0) {
+          var message = "Please select the owner of the task";
+          google.script.run.displayAlertMessage(message);
+          return;
         }
         var taskTitle = document.getElementById("task-title").value;
-        var owner = document.getElementById("task-owner").value;
         var priorityInput = document.getElementById("task-priority").value;
         var estimatedWorkDays =
             document.getElementById("task-estimated-work-days").value;
@@ -313,7 +319,7 @@
         google.script.run.withSuccessHandler(closeSidebar)
             .addEngineer(username, teamRole, codingDaysPerWeek, startDate, endDate,
                          countCurrTask, countTotalTask, initiative, emailAddress);
-      }
+      }  
     </script>
   </body>
 </html>
