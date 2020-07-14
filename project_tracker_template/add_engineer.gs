@@ -26,6 +26,10 @@ function addEngineer(username, teamRole, codingDaysPerWeek, startDate, endDate,
   var lastEngRow = newEngRow - 1;
   // Insert new row below the last engineer's row
   teamSheet.insertRowAfter(lastEngRow);
+  var a1Row = newEngRow + ':' + newEngRow;
+  var newRowRange = teamSheet.getRange(a1Row);
+  // Clear any formatting set in the new engineer's row
+  newRowRange.clear();
   // Set values in the newly inserted row
   // Serial number
   var sNoCell = teamSheet.getRange(newEngRow, 1);
@@ -42,14 +46,16 @@ function addEngineer(username, teamRole, codingDaysPerWeek, startDate, endDate,
   // The date on which the engineer joins the project
   var startDateCell = teamSheet.getRange(newEngRow, 5);
   startDateCell.setValue(startDate);
-  //  The date on which the engineer leaves the project
+  // The date on which the engineer leaves the project
   var endDateCell = teamSheet.getRange(newEngRow, 6);
   endDateCell.setValue(endDate);
   // Insert checkboxes under all the milestone columns
-  // Milestone Data starts from Column G onwards
-  var checkBoxRange = teamSheet.getRange(newEngRow, 7, 1, countMilestones);
-  var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
-  checkBoxRange.setDataValidation(rule);
+  if (countMilestones > 0) {
+    // Milestone Data starts from Column G onwards
+    var checkBoxRange = teamSheet.getRange(newEngRow, 7, 1, countMilestones);
+    var rule = SpreadsheetApp.newDataValidation().requireCheckbox().build();
+    checkBoxRange.setDataValidation(rule);
+  }
   // Number of tasks the engineer is currently working on
   var countCurrTaskCell = teamSheet.getRange(newEngRow, 7 + countMilestones);
   countCurrTaskCell.setValue(countCurrTask);
@@ -62,6 +68,7 @@ function addEngineer(username, teamRole, codingDaysPerWeek, startDate, endDate,
   // Email address of the engineer
   var emailAddressCell = teamSheet.getRange(newEngRow, 10 + countMilestones);
   emailAddressCell.setValue(emailAddress);
-  // Reload sidebar
-  showSidebar();
+  // Update spreadsheet values
+  updateSpreadsheet();
+  return true;
 }
