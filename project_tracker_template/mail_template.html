@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table{
+        table-layout:fixed;
+        font-size:10pt;
+        font-family:Arial;
+        width:0px;
+        border-collapse:collapse;
+        border:none;
+      }
+      tr{
+        height:21px;
+      }
+      .heading{
+        background-color:rgb(84,223,241);
+        border:1px solid rgb(204,204,204);
+        overflow:hidden;
+        padding:2px 3px;
+        text-align:center;
+        vertical-align:bottom;
+      }
+      .dark-row{
+        overflow:hidden;
+        padding:2px 3px;
+        vertical-align:bottom;
+        background-color:rgb(224,247,250);
+        text-align:center;
+        border:1px solid rgb(204,204,204);
+      }
+      .light-row{
+        overflow:hidden;
+        padding:2px 3px;
+        vertical-align:bottom;
+        text-align:center;
+        border:1px solid rgb(204,204,204);
+      }
+    </style>
+  </head>
+  <body>
+    <div dir="ltr">
+      Hello,
+      <br>Please take a look at this week's progress.
+      <br>
+      <br>
+      <br>
+      <!-- The <table> tag defines an HTML table --> 
+      <table cellspacing="0" cellpadding="0" dir="ltr" border="1">
+        <!-- The <colgroup> tag specifies a group of one or more columns in a table for formatting -->
+        <colgroup>
+          <col width="31">
+          <col width="260">
+          <!-- Standard scriptlets execute code without explicitly outputting content to the page -->
+          <? for(var i = 0; i < milestones.length; i++) { ?>
+            <col width="85">
+          <? } ?>
+        </colgroup>
+        <tbody>
+          <!-- Each table row is defined with a <tr> tag --> 
+          <tr>
+            <!-- Each table data/cell is defined with a <td> tag -->
+            <td class="heading"></td>
+            <td class="heading">MILESTONE</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <!-- Printing Scriptlet outputs the results of its code into the page -->
+              <td class ="heading"><?= milestones[i].number ?></td>
+            <? } ?>                
+          </tr>
+          <tr>
+            <td class="light-row">1</td>
+            <td class="light-row">Desired Launch Date</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="light-row"><?= milestones[i].desiredLaunchDate ?></td>
+            <? } ?>               
+          </tr>
+          <tr>
+            <td class="dark-row">2</td>
+            <td class="dark-row">Estimated Work Days</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="dark-row"><?= milestones[i].estimatedWorkDays ?></td>
+            <? } ?>                
+          </tr>
+          <tr>
+            <td class="light-row">3</td>
+            <td class="light-row">Work Days Completed</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="light-row"><?= milestones[i].workDaysCompleted ?></td>
+            <? } ?>                
+          </tr>
+          <tr>
+            <td class="dark-row">4</td>
+            <td class="dark-row">Remaining Work Days</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="dark-row"><?= milestones[i].remainingWorkDays ?></td>
+            <? } ?>                
+          </tr>
+          <tr>
+            <td class="light-row">5</td>
+            <td class="light-row">Start Date</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="light-row"><?= milestones[i].startDate ?></td>
+            <? } ?>    
+          </tr>
+          <tr>
+            <td class="dark-row">6</td>
+            <td class="dark-row">Estimated Launch Date</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="dark-row"><?= milestones[i].estimatedLaunchDate ?></td>
+            <? } ?>
+          </tr>
+          <tr>
+            <td class="light-row">7</td>
+            <td class="light-row">Tasks with no assigned days</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="light-row"><?= milestones[i].tasksWithNoAssignedDays ?></td>
+            <? } ?>
+          </tr>
+          <tr>
+            <td class="dark-row">8</td>
+            <td class="dark-row">Days ahead / behind of schedule (+/-)</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="dark-row"><?= milestones[i].daysSchedule ?></td>
+            <? } ?>
+          </tr>
+          <tr>
+            <td class="light-row">9</td>
+            <td class="light-row">Remaining Weeks in Iteration</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="light-row"><?= milestones[i].remainingWeeksInIteration ?></td>
+            <? } ?>
+          </tr>
+        </tbody>
+      </table>
+      <br>Best Regards,
+      <br>Team 
+    </div>
+  </body>
+</html>
