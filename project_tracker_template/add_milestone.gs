@@ -22,8 +22,8 @@ function addMilestoneSummary(desiredLaunchDate, currentMilestoneNumber,
   var summarySheet =
       SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Summary");
   var lastMilestoneColumn = currentMilestoneNumber + 1;
-  // Milestone data starts from Column C onwards in the Summary Sheet
-  var newMilestoneColumn = currentMilestoneNumber + 2;
+  // Milestone data starts from Column B onwards in the Summary Sheet
+  var newMilestoneColumn = currentMilestoneNumber + 1;
   summarySheet.insertColumnAfter(lastMilestoneColumn);
   // Milestone title
   var titleCell = summarySheet.getRange(5, newMilestoneColumn);
@@ -65,9 +65,21 @@ function addMilestoneSummary(desiredLaunchDate, currentMilestoneNumber,
   var remainingWeeksCell = summarySheet.getRange(14, newMilestoneColumn);
   remainingWeeksCell.setFormula("=max(CEILING((" + desiredLaunchDateA1 +
                                 "-today())/7), 0)");
+  // Number of engineers assigned
+  var engCountCell = summarySheet.getRange(15, newMilestoneColumn);
+  var teamMilestoneColumn = currentMilestoneNumber + 6;
+  var a1Notation = SpreadsheetApp.getActiveSpreadsheet()
+                       .getSheetByName("Team")
+                       .getRange(6, teamMilestoneColumn, 50)
+                       .getA1Notation();
+  engCountCell.setFormula('=COUNTIF(Team!' + a1Notation + ',TRUE)');
   // Labels and Notes
-  var notesCell = summarySheet.getRange(15, newMilestoneColumn);
+  var notesCell = summarySheet.getRange(16, newMilestoneColumn);
   notesCell.setFormula("Tasks!L" + newMilestoneRow);
+  summarySheet.setColumnWidth(newMilestoneColumn, 140);
+  summarySheet.getRange(6, newMilestoneColumn, 11)
+      .setBorder(true, true, true, true, false, false, "#c65911",
+                 SpreadsheetApp.BorderStyle.SOLID);
 }
 
 /**
