@@ -130,6 +130,13 @@
               <td class="light-row"><?= milestones[i].remainingWeeksInIteration ?></td>
             <? } ?>
           </tr>
+          <tr>
+            <td class="dark-row">10</td>
+            <td class="dark-row">Number of Engineers assigned</td>
+            <? for(var i = 0; i < milestones.length; i++) { ?>
+              <td class="dark-row"><?= milestones[i].engineerCount ?></td>
+            <? } ?>
+          </tr>
         </tbody>
       </table>
       <br>Best Regards,

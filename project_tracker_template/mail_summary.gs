@@ -11,11 +11,11 @@ function getMilestoneData() {
   var countColumns = sendMilestoneCount();
   // Milestone Data stored from Row 6, Column C onwards.
   var firstEngineerRow = 6;
-  var firstMilestoneColumn = 3;
+  var firstMilestoneColumn = 2;
   var values =
       SpreadsheetApp.getActive()
           .getSheetByName("Summary")
-          .getRange(firstEngineerRow, firstMilestoneColumn, 9, countColumns)
+          .getRange(firstEngineerRow, firstMilestoneColumn, 10, countColumns)
           .getValues();
   var milestones = [];
   for (var j = 0; j < countColumns; j++) {
@@ -40,6 +40,8 @@ function getMilestoneData() {
     milestone.daysSchedule = values[7][j];
     // Remaining Weeks in Iteration
     milestone.remainingWeeksInIteration = values[8][j];
+    // Number of engineers assigned to the milestone
+    milestone.engineerCount = values[9][j];
     milestones.push(milestone);
   }
   return milestones;
