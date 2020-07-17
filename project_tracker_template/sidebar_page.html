@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="accordion" id="accordionExample">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h2 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Add Engineer
+            </button>
+          </h2>
+        </div>
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div class="card-body">
+            <form>
+              <!-- Role of the engineer -->
+              <label for="team-role-input">Enter Team Role :</label>
+              <br>
+              <input type="text" id="eng-team-role">
+              <br>
+              <br>
+              <!-- Username of the engineer -->
+              <label for="username-input">Enter Username :</label>
+              <br>
+              <input type="text" id="eng-username">
+              <br>
+              <br>
+              <!-- Number of coding days per week of the engineer -->
+              <label for="cdpw-input">Enter coding days per week :</label>
+              <br>
+              <input type="text" id="eng-coding-days-per-week">
+              <br>
+              <br>
+              <!-- The date on which the engineer joins the project -->
+              <label for="start">Start date :</label>
+              <br>
+              <input type="date" id="eng-start" name="start-date">
+              <br>
+              <br>
+              <!-- The date on which the engineer leaves the project -->
+              <label for="end">End date :</label>
+              <br>
+              <input type="date" id="eng-end" name="end-date">
+              <br>
+              <br>
+              <!-- Number of tasks the engineer is currently working on -->
+              <label for="count-curr-task-input">Enter number of tasks working on currently :</label>
+              <br>
+              <input type="text" id="eng-count-curr-task">
+              <br>
+              <br>
+              <!-- Number of tasks assigned to the engineer -->
+              <label for="count-total-task-input">Enter total number of tasks assigned :</label>
+              <br>
+              <input type="text" id="eng-count-total-task">
+              <br>
+              <br>
+              <!-- Initiatives taken by the engineer -->
+              <label for="initiative-input">Enter initiatives :</label>
+              <br>
+              <input type="text" id="eng-initiative">
+              <br>
+              <br>
+              <!-- Email address of the engineer -->
+              <label for="email-input">Enter email address :</label>
+              <br>
+              <input type="text" id="eng-email-address">
+              <br>
+              <br>
+              <button onclick='sendEngineerInput()'>Add Engineer</button>
+              <br>
+              <br>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h2 class="mb-0">
+            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            Add Milestone
+            </button>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+          <div class="card-body">
+            <form>
+              <!-- Milestone Title -->
+              <label for="title-input">Enter Milestone Title :</label>
+              <br>
+              <input type="text" id="milestone-title">
+              <br>
+              <br>
+              <!-- Desired Launch Date -->
+              <label for="launch">Desired Launch Date :</label>
+              <input type="date" id="milestone-desired-launch" name="launch-date">
+              <br>
+              <br>
+              <!-- Notes -->
+              <label for="notes-input">Enter Notes :</label>
+              <br>
+              <input type="text" id="milestone-notes">
+              <br>
+              <br>
+              <button onclick='sendMilestoneInput()'>Add Milestone</button>
+              <br>
+              <br>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h2 class="mb-0">
+            <button onclick='getMilestoneCount()' class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            Add Task
+            </button>
+          </h2>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+          <div class="card-body">
+            <form>
+              <!-- Task title -->
+              <label for="title-input">Enter Task Title :</label>
+              <br>
+              <input type="text" id="task-title">
+              <br>
+              <br>
+              <!-- Priority of task -->
+              <label for="list-priority">Select priority :</label>
+              <br>
+              <select id="task-priority" name="select-list-priority">
+                <option value="HIGH">HIGH</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="LOW">LOW</option>
+              </select>
+              <br>
+              <br>
+              <!-- Select Milestone in which the task is added  -->
+              <label for="milestone-input">Select Milestone : </label>
+              <select id="task-milestone" name="select-list-milestone" onclick='getUsernames()'>
+                <option value="0">Select Milestone...</option>
+              </select>
+              <br>
+              <br>
+              <!-- Estimated coding days required for the task -->
+              <label for="estimated-work-days"> Enter estimated work days :</label>
+              <br>
+              <input type="text" id="task-estimated-work-days">
+              <br>
+              <br>
+              <!-- Coding days already completed for the task -->
+              <label for="completed-work-days"> Enter work days completed :</label>
+              <br>
+              <input type="text" id="task-completed-work-days">
+              <br>
+              <br>
+              <!-- CL Link of the task -->
+              <label for="cl-input">Enter CL Link :</label>
+              <br>
+              <input type="text" id="task-cl">
+              <br>
+              <br>
+              <!-- Select Username of the Owner -->
+              <label for="owner-input">Select Owner (Username): </label>
+              <br>
+              <select id="task-owner" name="select-list-owner">
+                <option value="0">Select Owner...</option>
+              </select>
+              <br>
+              <br>
+              <!-- Notes -->
+              <label for="notes-input">Enter Notes :</label>
+              <br>
+              <input type="text" id="task-notes">
+              <br>
+              <br>
+              <button onclick='sendTaskInput()'>Add Task</button>
+              <br>
+              <br>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      /**
+       * Closes the sidebar if the server side function for adding engineer/
+       * milestone/ task has executed successfully
+       * @param {Boolean} isExecuted The boolean value returned by the executed server
+       *     side function, equals true when execution is successful else false.
+       */
+      function closeSidebar(isExecuted) {
+        if (isExecuted) {
+          google.script.host.close();
+        }
+      }
+
+      /**
+       * Add options in the dropdown list under 'Select Milestone' in the Add Task
+       * card
+       * Options added reflect the current number of milestones in the spreadsheet
+       * @param {Number} milestoneCount The current number of milestones in the
+       *     spreadsheet
+       */
+      function onSuccessMilestone(milestoneCount) {
+        document.getElementById('task-milestone').innerHTML = "";
+        document.getElementById('task-milestone').innerHTML +=
+            '<option value="0">Select Milestone...</option>';
+        if (milestoneCount > 0) {
+          for (var i = 1; i <= milestoneCount; i++) {
+            document.getElementById('task-milestone').innerHTML +=
+                '<option value="' + i + '">' + i + '</option>';
+          }
+        }
+      }
+
+      /**
+       * Get the number of milestones from the server-side sendMilestoneCount function
+       * The server function returns the value to the client as a parameter passed to
+       * the onSuccessMilestone function
+       */
+      function getMilestoneCount() {
+        google.script.run.withSuccessHandler(onSuccessMilestone).sendMilestoneCount();
+      }
+
+      /**
+       * Add options in the dropdown list under 'Select Owner' in the 'Add Task' card
+       * Options added reflect the usernames of all the  the team members working on
+       * the project
+       * @param {String[]} usernames String array containing usernames of all the team
+       *     members
+       */
+      function onSuccessUsernames(usernames) {
+        document.getElementById('task-owner').innerHTML = "";
+        document.getElementById('task-owner').innerHTML +=
+            '<option value="0">Select Owner...</option>';
+        if (usernames.length > 0) {
+          for (var engineerIndex = 0; engineerIndex < usernames.length;
+               engineerIndex++) {
+            document.getElementById('task-owner').innerHTML +=
+                '<option value="' + usernames[engineerIndex] + '">' +
+                usernames[engineerIndex] + '</option>';
+          }
+        }
+      }
+
+      /**
+       * Get the usernames of all the team members from the server-side
+       * sendTeamUsernames function
+       * The server function returns the string array to the client as
+       * a parameter passed to the onSuccessUsernames function
+       */
+      function getUsernames() {
+        google.script.run.withSuccessHandler(onSuccessUsernames).sendTeamUsernames();
+      }
+
+      /**
+       * Send new task data to the server-side insertTask function
+       */
+      function sendTaskInput() {
+        var milestoneNumber = document.getElementById("task-milestone").value;
+        if (milestoneNumber == 0) {
+          var message = "Please select a milestone to add a task";
+          google.script.run.displayAlertMessage(message);
+          return;
+        }
+        var owner = document.getElementById("task-owner").value;
+        if (owner == 0) {
+          var message = "Please select the owner of the task";
+          google.script.run.displayAlertMessage(message);
+          return;
+        }
+        var taskTitle = document.getElementById("task-title").value;
+        var priorityInput = document.getElementById("task-priority").value;
+        var estimatedWorkDays =
+            document.getElementById("task-estimated-work-days").value;
+        var engDaysCompleted =
+            document.getElementById("task-completed-work-days").value;
+        var clLink = document.getElementById("task-cl").value;
+        var notes = document.getElementById("task-notes").value;
+        google.script.run.withSuccessHandler(closeSidebar)
+            .insertTask(milestoneNumber, taskTitle, owner, priorityInput,
+                        estimatedWorkDays, engDaysCompleted, clLink, notes);
+      }
+
+      /**
+       * Send new milestone data to the server-side insertMilestoneMain function
+       */
+      function sendMilestoneInput() {
+        var milestoneTitle = document.getElementById("milestone-title").value;
+        var desiredLaunchDate =
+            document.getElementById("milestone-desired-launch").value;
+        var notes = document.getElementById("milestone-notes").value;
+        google.script.run.withSuccessHandler(closeSidebar)
+            .insertMilestoneMain(milestoneTitle, desiredLaunchDate, notes);
+      }
+
+      /**
+       * Send new engineer data to the server-side addEngineer function
+       */
+      function sendEngineerInput() {
+        var username = document.getElementById("eng-username").value;
+        var codingDaysPerWeek =
+            document.getElementById("eng-coding-days-per-week").value;
+        var teamRole = document.getElementById("eng-team-role").value;
+        var startDate = document.getElementById("eng-start").value;
+        var endDate = document.getElementById("eng-end").value;
+        var countCurrTask = document.getElementById("eng-count-curr-task").value;
+        var countTotalTask = document.getElementById("eng-count-total-task").value;
+        var initiative = document.getElementById("eng-initiative").value;
+        var emailAddress = document.getElementById("eng-email-address").value;
+        google.script.run.withSuccessHandler(closeSidebar)
+            .addEngineer(username, teamRole, codingDaysPerWeek, startDate, endDate,
+                         countCurrTask, countTotalTask, initiative, emailAddress);
+      }  
+    </script>
+  </body>
+</html>
