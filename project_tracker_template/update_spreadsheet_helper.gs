@@ -82,6 +82,7 @@ function initializeArray(rowCount, columnCount) {
 
 /**
  * Returns an array containing initial task start dates of each engineer
+ * Start dates displayed in the Tasks Sheet are initial task start dates
  * Initial Task Start Date for an engineer is the maximum of Project Start Date
  * and the Engineer's Start Date
  * @param {Date} projectStart Date object containing start date of the project
@@ -91,49 +92,48 @@ function initializeArray(rowCount, columnCount) {
  * @return {Date[]} Date array containing initial task start dates of each
  *     engineer
  */
-function initializeTaskStartDate(projectStart, engineerInfo, countEng) {
-  var taskEngineerStartDate = [];
+function getDisplayStartDate(projectStart, engineerInfo, countEng) {
+  var displayStartDateArray = [];
   for (var i = 0; i < countEng; i++) {
     var startDateEng = engineerInfo[i][2];
     if (projectStart < startDateEng) {
-      taskEngineerStartDate.push(startDateEng);
+      displayStartDateArray.push(startDateEng);
     } else {
-      taskEngineerStartDate.push(projectStart);
+      displayStartDateArray.push(projectStart);
     }
   }
-  return taskEngineerStartDate;
+  return displayStartDateArray;
 }
 
 /**
- * Sets the initial task start dates (to be used for calculating the estimated
- * end date of the task for each engineer) in 'taskEngineerEndDate'.
- * The initial task start dates for these calculations is maximum of the
+ * Sets the task start dates (to be used for calculating the estimated
+ * end date of the task for each engineer) in 'actualStartDateArray'.
+ * The task start dates for these calculations is maximum of the
  * current date and the displayed task start date for each engineer (where
  * displayed task start date is maximum of project start date and engineer's
  * start date)
- * Sets corresponding value in 'isTaskEngineerStartDateAfterToday' array to
+ * Sets corresponding value in 'isStartDateAfterTodayArray' array to
  * 'true' if the displayed task start date for the engineer is greater than
  * current date else 'false'
- * @param {Date[]} taskEngineerStartDate Date array containing displayed task
+ * @param {Date[]} displayStartDateArray Date array containing displayed task
  *     start dates of each engineer
- * @param {Boolean[]} isTaskEngineerStartDateAfterToday Boolean array to store
+ * @param {Boolean[]} isStartDateAfterTodayArray Boolean array to store
  *     'true' if the displayed task start date is
  * greater than current date else 'false' for all engineers
- * @param {Date[]} taskEngineerEndDate Date array to store maximum of the
+ * @param {Date[]} actualStartDateArray Date array to store maximum of the
  *     current date and the displayed task start date for each engineer
  * @param {Number} countEng Number of engineers in the Team
  * @param {Date} currDate The current date
  */
-function initializeStartForEndDates(taskEngineerStartDate,
-                                    isTaskEngineerStartDateAfterToday,
-                                    taskEngineerEndDate, countEng, currDate) {
+function getActualStartDate(displayStartDateArray, isStartDateAfterTodayArray,
+                            actualStartDateArray, countEng, currDate) {
   for (var i = 0; i < countEng; i++) {
-    if (taskEngineerStartDate[i] > currDate) {
-      taskEngineerEndDate.push(taskEngineerStartDate[i]);
-      isTaskEngineerStartDateAfterToday.push(true);
+    if (displayStartDateArray[i] > currDate) {
+      actualStartDateArray.push(displayStartDateArray[i]);
+      isStartDateAfterTodayArray.push(true);
     } else {
-      taskEngineerEndDate.push(currDate);
-      isTaskEngineerStartDateAfterToday.push(false);
+      actualStartDateArray.push(currDate);
+      isStartDateAfterTodayArray.push(false);
     }
   }
 }
