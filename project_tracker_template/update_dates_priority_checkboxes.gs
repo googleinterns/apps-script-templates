@@ -25,19 +25,17 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
                                      countEng, tableLength, checkBoxValues) {
   // Array containing task start dates to display in the start date column of
   // Task Sheet
-  var taskEngineerStartDate =
-      initializeTaskStartDate(projectStart, engineerInfo, countEng);
-  // Boolean array storing whether task start date to display is after current
+  var displayStartDateArray =
+      getDisplayStartDate(projectStart, engineerInfo, countEng);
+  // Boolean array storing whether task start date (to display) is after current
   // date
-  var isTaskEngineerStartDateAfterToday = [];
+  var isStartDateAfterTodayArray = [];
   // Array containing task start dates to calculate estimated launch dates in
   // the launch date column of Task Sheet
-  var taskEngineerEndDate = [];
-  // Initialize array taskEngineerEndDate with task start dates to calculate
-  // estimated launch dates
-  initializeStartForEndDates(taskEngineerStartDate,
-                             isTaskEngineerStartDateAfterToday,
-                             taskEngineerEndDate, countEng, currDate);
+  var actualStartDateArray = [];
+  // Initialize arrays 'actualStartDateArray' and 'isStartDateAfterTodayArray'
+  getActualStartDate(displayStartDateArray, isStartDateAfterTodayArray,
+                     actualStartDateArray, countEng, currDate);
   for (var rowIndex = 0; rowIndex < tableLength; rowIndex++) {
     var currentMilestoneNumber = taskTable[rowIndex][12];  // Column M
     var ownerSelection = taskTable[rowIndex][2];           // Column C
@@ -49,42 +47,43 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
       var engineerIndex = match(ownerSelection, usernames);
       var estimateWorkDays = taskTable[rowIndex][8];
       // Task start date (to display)
-      var startDateTask = taskEngineerStartDate[engineerIndex];
-      // Update Start Date
-      taskTable[rowIndex][5] = [ startDateTask ];
+      var displayStartDate = displayStartDateArray[engineerIndex];
+      // Update Start Date (to display)
+      taskTable[rowIndex][5] = [ displayStartDate ];
       // Number of actual days required by an engineer to complete the estimated
       // work days of a task
-      var days = Math.ceil(estimateWorkDays / codingUnitsPerDay[engineerIndex]);
+      var actualEstimatedDays =
+          Math.ceil(estimateWorkDays / codingUnitsPerDay[engineerIndex]);
       // If the task start date to be displayed is after current date then the
       // estimated launch date is independent of the current date and the
       // remaining work days
-      if (isTaskEngineerStartDateAfterToday[engineerIndex]) {
+      if (isStartDateAfterTodayArray[engineerIndex]) {
         // Calculate end date using estimated work days
-        var endDateTask = addDays(startDateTask, days);
+        var endDate = addDays(displayStartDate, actualEstimatedDays);
         // Update End Date
-        taskTable[rowIndex][6] = [ endDateTask ];
+        taskTable[rowIndex][6] = [ endDate ];
       } else {
         // Calculate end date using remaining work days
         var remainingWorkDays = taskTable[rowIndex][9];
         // Start date to calculate estimated launch date
-        var startDateToPrintEndDate = taskEngineerEndDate[engineerIndex];
+        var actualStartDate = actualStartDateArray[engineerIndex];
         // Number of actual days required by an engineer to complete the
         // remaining work days of a task
-        var daysToPrintEndDate =
+        var actualRemainingDays =
             Math.ceil(remainingWorkDays / codingUnitsPerDay[engineerIndex]);
-        var endDateTask = addDays(startDateToPrintEndDate, daysToPrintEndDate);
+        var endDate = addDays(actualStartDate, actualRemainingDays);
         // Update End Date
-        taskTable[rowIndex][6] = [ endDateTask ];
+        taskTable[rowIndex][6] = [ endDate ];
         // Update the next task start date (for calculating launch date) of the
         // engineer to the next day of current task's estimated launch date
-        startDateToPrintEndDate = addDays(endDateTask, 1);
-        taskEngineerEndDate[engineerIndex] = startDateToPrintEndDate;
+        actualStartDate = addDays(endDate, 1);
+        actualStartDateArray[engineerIndex] = actualStartDate;
       }
       // Update the next 'display task start date' of the engineer to the
       // next day of current task's estimated launch date (calculated using
-      // current 'display task start date' and estimated work days)
-      startDateTask = addDays(startDateTask, days + 1);
-      taskEngineerStartDate[engineerIndex] = startDateTask;
+      // current 'display task start date' and actual estimated work days)
+      displayStartDate = addDays(displayStartDate, actualEstimatedDays + 1);
+      displayStartDateArray[engineerIndex] = displayStartDate;
       // Check the engineer's cell under the current milestone column in Team
       // Sheet
       checkBoxValues[engineerIndex][currentMilestoneNumber - 1] = "=TRUE";
