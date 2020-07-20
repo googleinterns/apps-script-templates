@@ -56,11 +56,12 @@ function addMilestoneSummary(desiredLaunchDate, currentMilestoneNumber,
       '=ArrayFormula(sum(if(FLOOR(Tasks!$A7:$A)=' + currentMilestoneNumber +
       ', if(Tasks!$H7:$H<>"done",if(isblank(Tasks!$I7:$I),1,0),0),0)))');
   var tasksWithNoDaysA1 = tasksWithNoDaysCell.getA1Notation();
-  // Days ahead/behind (+/-)
+  // Days ahead/behind (+/-) 
   var daysAheadCell = summarySheet.getRange(13, newMilestoneColumn);
   daysAheadCell.setFormula(
-      '=if(OR(' + remainingDaysA1 + '>0,' + tasksWithNoDaysA1 + '>0), FLOOR(' +
-      desiredLaunchDateA1 + '-' + estLaunchDateA1 + ') ,"DONE")');
+      '=if(OR(' + remainingDaysA1 + '>0,' + tasksWithNoDaysA1 + '>0), if(AND(' +
+      desiredLaunchDateA1 + '<>"",' + estLaunchDateA1 + '<>""),FLOOR(' +
+      desiredLaunchDateA1 + '-' + estLaunchDateA1 + '), ""),"DONE")');
   // Remaining Weeks
   var remainingWeeksCell = summarySheet.getRange(14, newMilestoneColumn);
   remainingWeeksCell.setFormula("=max(CEILING((" + desiredLaunchDateA1 +
