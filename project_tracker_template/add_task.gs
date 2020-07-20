@@ -69,8 +69,10 @@ function insertTask(milestoneNumber, taskName, owner, priorityInput,
   var titleCell = taskSheet.getRange(newTaskRow, 2);  // Column B
   titleCell.setValue(taskName);
   // Owner
-  var ownerCell = taskSheet.getRange(newTaskRow, 3);  // Column C
-  ownerCell.setValue(owner);
+  if (owner != 0) {
+    var ownerCell = taskSheet.getRange(newTaskRow, 3);  // Column C
+    ownerCell.setValue(owner);
+  }
   // CL Link of the task
   var cellCL = taskSheet.getRange(newTaskRow, 4);  // Column D
   cellCL.setValue(clLink);
