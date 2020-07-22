@@ -12,7 +12,7 @@ function updateSpreadsheet() {
   var projectStart = taskSheet.getRange('H2').getValue();
   // Display alert if the project start date is invalid
   if (!isValidDate(projectStart)) {
-    var message = 'Please enter valid date!';
+    var message = 'Please enter valid Project Start Date!';
     displayAlertMessage(message);
     return;
   }
