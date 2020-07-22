@@ -9,26 +9,26 @@
 - Make a copy of the spreadsheet 
 - Enter the project start date in the Tasks Sheet
 
-##### Add Engineer
+### Add Engineer
 - Go to Custom Menu => Add => Add Engineer
 - Enter all the required information about the engineer in the sidebar form.
 - Click on the ‘Add Engineer’ button.
 
-##### Add Milestone
+### Add Milestone
 - Go to Custom Menu => Add => Add Milestone
 - Enter all the required information about the milestone in the sidebar form.
 - Click on the ‘Add Milestone’ button.
 
-##### Add Task
+### Add Task
 - Go to Custom Menu => Add => Add Task
 - Enter all the required information about the task in the sidebar form.
 - Click on the ‘Add Task’ button.
 
-##### Mail Summary
+### Mail Summary
 - Go to Custom Menu => Add => Mail Summary
 
-##### Backup Spreadsheet
+### Backup Spreadsheet
 - Go to Custom Menu => Add => Backup Spreadsheet
 
-##### Archive completed tasks
+### Archive completed tasks
 - Go to Custom Menu => Add => Archive Done Tasks
