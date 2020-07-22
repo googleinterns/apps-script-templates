@@ -56,7 +56,6 @@ function insertTask(milestoneNumber, taskName, owner, priorityInput,
   var newTaskRow = lastRow + 1;
   taskSheet.insertRowAfter(lastRow);
   var currentTaskNumber = getTaskNumber(taskSheet, lastRow, milestoneNumber);
-  var TaskColA = milestoneNumber + "." + currentTaskNumber;
   var isFirstTask = (currentTaskNumber == 1 ? true : false);
   var a1Row = newTaskRow + ':' + newTaskRow;
   var newRowRange = taskSheet.getRange(a1Row);
@@ -64,7 +63,8 @@ function insertTask(milestoneNumber, taskName, owner, priorityInput,
   // Set values in the newly inserted row
   // Task number
   var taskNumber = taskSheet.getRange(newTaskRow, 1);  // Column A
-  taskNumber.setValue(TaskColA);
+  taskNumber.setValue(
+      '=IF(ISNUMBER(INDIRECT("R[-1]C[12]", false)),JOIN(".",INDIRECT("R[-1]C[12]", false),INDIRECT("R[-1]C[13]", false)+1))');
   // Task title
   var titleCell = taskSheet.getRange(newTaskRow, 2);  // Column B
   titleCell.setValue(taskName);
@@ -96,8 +96,8 @@ function insertTask(milestoneNumber, taskName, owner, priorityInput,
   milestoneCell.setValue(milestoneNumber);
   // Task Number
   var taskNumberCell = taskSheet.getRange(newTaskRow, 14);  // Column N
-  var taskNumber = '=$N' + lastRow + '+1';
-  taskNumberCell.setValue(taskNumberCell);
+  taskNumberCell.setValue(
+      '=IF(ISNUMBER(INDIRECT("R[-1]C[0]", false)),INDIRECT("R[-1]C[0]", false)+1,1)');
   // Group the first task row under a milestone
   // New rows inserted below a grouped row automatically get included in the
   // grouping.
