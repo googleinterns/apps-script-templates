@@ -20,7 +20,7 @@ function onOpen() {
 */
 function showSidebar() {
   // Creates a new HtmlOutput object from a file in the code editor.
-  var html = HtmlService.createHtmlOutputFromFile('SidebarPage') 
+  var html = HtmlService.createHtmlOutputFromFile('sidebar_page') 
       .setTitle('Present Sidebar')
       .setWidth(300);
   SpreadsheetApp.getUi() 
