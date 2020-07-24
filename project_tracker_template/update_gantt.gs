@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+const SERIAL_NUMBER_RANGE = 'Tasks!$A$7:$A';
+const TITLE_RANGE = 'Tasks!$B$7:$B';
+const START_DATE_RANGE = 'Tasks!$F$7:$F';
+const EST_LAUNCH_DATE_RANGE = 'Tasks!$G$7:$G';
+const STATUS_RANGE = 'Tasks!$H$7:$H';
+const OWNER_RANGE = 'Tasks!$C$7:$C';
+const TASK_NUMBER_RANGE = 'Tasks!$N$7:$N';
+const USERNAME_RANGE = 'Team!$C$6:$C$25';
+const OWNER_USERNAMES_RANGE = '$I$7:$I$26';
+const COLOR_COLUMN_INDEX = 9;
+
 /**
  * Updates all the custom formulas in the Timeline sheet
  * @param {Object[][]} ganttTableValues A two dimensional array containing
@@ -26,17 +37,6 @@ function updateGantt(ganttTableValues, numRows) {
       ganttTableValues[i][j] = [ '' ];
     }
   }
-  // Set ranges
-  const serialNumberRange = 'Tasks!$A$7:$A';
-  const titleRange = 'Tasks!$B$7:$B';
-  const startDate = 'Tasks!$F$7:$F';
-  const estLaunchDateRange = 'Tasks!$G$7:$G';
-  const statusRange = 'Tasks!$H$7:$H';
-  const ownerRange = 'Tasks!$C$7:$C';
-  const taskNumberRange = 'Tasks!$N$7:$N';
-  const usernameRange = 'Team!$C$6:$C$25';
-  const ownerUsernamesRange = '$I$7:$I$26';
-  const colorColumnIndex = 9;
   // Set Project Title
   ganttTableValues[0][1] = [ '=Tasks!B1' ];
   // Set Project Start Date
@@ -49,53 +49,53 @@ function updateGantt(ganttTableValues, numRows) {
   ];
   ganttTableValues[0][8] = [ 'Milestone' ];
   // Set Task Serial Number from Task Sheet
-  ganttTableValues[1][0] = [ '=ArrayFormula(' + serialNumberRange + ')' ];
+  ganttTableValues[1][0] = [ '=ArrayFormula(' + SERIAL_NUMBER_RANGE + ')' ];
   // Set Task/ Milestone Title from Task Sheet
-  ganttTableValues[1][1] = [ '=ArrayFormula(' + titleRange + ')' ];
+  ganttTableValues[1][1] = [ '=ArrayFormula(' + TITLE_RANGE + ')' ];
   // Set Task/ Milestone Start Date from Task Sheet
-  ganttTableValues[1][2] = [ '=ArrayFormula(' + startDate + ')' ];
+  ganttTableValues[1][2] = [ '=ArrayFormula(' + START_DATE_RANGE + ')' ];
   // Set Task/ Milestone Estimated Launch Date from Task Sheet
-  ganttTableValues[1][3] = [ '=ArrayFormula(' + estLaunchDateRange + ')' ];
+  ganttTableValues[1][3] = [ '=ArrayFormula(' + EST_LAUNCH_DATE_RANGE + ')' ];
   // Set Task/ Milestone Status from Task Sheet
-  ganttTableValues[1][5] = [ '=ArrayFormula(' + statusRange + ')' ];
+  ganttTableValues[1][5] = [ '=ArrayFormula(' + STATUS_RANGE + ')' ];
   // Set Task/ Milestone Owner from Task Sheet
-  ganttTableValues[1][6] = [ '=ArrayFormula(' + ownerRange + ')' ];
+  ganttTableValues[1][6] = [ '=ArrayFormula(' + OWNER_RANGE + ')' ];
   // Set the usernames of team members in the Color Legend Block
-  ganttTableValues[1][8] = [ '=ArrayFormula(' + usernameRange + ')' ];
+  ganttTableValues[1][8] = [ '=ArrayFormula(' + USERNAME_RANGE + ')' ];
   // Set the Task Number in Column M (hidden) of the Tasks/ Milestones from the
   // Task Sheet
-  ganttTableValues[1][12] = [ '=ArrayFormula(' + taskNumberRange + ')' ];
+  ganttTableValues[1][12] = [ '=ArrayFormula(' + TASK_NUMBER_RANGE + ')' ];
   // Color Legend for Gantt Chart
-  ganttTableValues[0][colorColumnIndex] = [ '#9fc5e8' ];
-  ganttTableValues[1][colorColumnIndex] = [ '#3366CC' ];
-  ganttTableValues[2][colorColumnIndex] = [ '#DC3912' ];
-  ganttTableValues[3][colorColumnIndex] = [ '#FF9900' ];
-  ganttTableValues[4][colorColumnIndex] = [ '#43ff43' ];
-  ganttTableValues[5][colorColumnIndex] = [ '#990099' ];
-  ganttTableValues[6][colorColumnIndex] = [ '#ffc66f' ];
-  ganttTableValues[7][colorColumnIndex] = [ '#0099C6' ];
-  ganttTableValues[8][colorColumnIndex] = [ '#DD4477' ];
-  ganttTableValues[9][colorColumnIndex] = [ '#66AA00' ];
-  ganttTableValues[10][colorColumnIndex] = [ '#B82E2E' ];
-  ganttTableValues[11][colorColumnIndex] = [ '#316395' ];
-  ganttTableValues[12][colorColumnIndex] = [ '#994499' ];
-  ganttTableValues[13][colorColumnIndex] = [ '#22AA99' ];
-  ganttTableValues[14][colorColumnIndex] = [ '#AAAA11' ];
-  ganttTableValues[15][colorColumnIndex] = [ '#6633CC' ];
-  ganttTableValues[16][colorColumnIndex] = [ '#E67300' ];
-  ganttTableValues[17][colorColumnIndex] = [ '#8B0707' ];
-  ganttTableValues[18][colorColumnIndex] = [ '#329262' ];
-  ganttTableValues[19][colorColumnIndex] = [ '#5574A6' ];
-  ganttTableValues[20][colorColumnIndex] = [ '#3B3EAC' ];
+  ganttTableValues[0][COLOR_COLUMN_INDEX] = [ '#9fc5e8' ];
+  ganttTableValues[1][COLOR_COLUMN_INDEX] = [ '#3366CC' ];
+  ganttTableValues[2][COLOR_COLUMN_INDEX] = [ '#DC3912' ];
+  ganttTableValues[3][COLOR_COLUMN_INDEX] = [ '#FF9900' ];
+  ganttTableValues[4][COLOR_COLUMN_INDEX] = [ '#43ff43' ];
+  ganttTableValues[5][COLOR_COLUMN_INDEX] = [ '#990099' ];
+  ganttTableValues[6][COLOR_COLUMN_INDEX] = [ '#ffc66f' ];
+  ganttTableValues[7][COLOR_COLUMN_INDEX] = [ '#0099C6' ];
+  ganttTableValues[8][COLOR_COLUMN_INDEX] = [ '#DD4477' ];
+  ganttTableValues[9][COLOR_COLUMN_INDEX] = [ '#66AA00' ];
+  ganttTableValues[10][COLOR_COLUMN_INDEX] = [ '#B82E2E' ];
+  ganttTableValues[11][COLOR_COLUMN_INDEX] = [ '#316395' ];
+  ganttTableValues[12][COLOR_COLUMN_INDEX] = [ '#994499' ];
+  ganttTableValues[13][COLOR_COLUMN_INDEX] = [ '#22AA99' ];
+  ganttTableValues[14][COLOR_COLUMN_INDEX] = [ '#AAAA11' ];
+  ganttTableValues[15][COLOR_COLUMN_INDEX] = [ '#6633CC' ];
+  ganttTableValues[16][COLOR_COLUMN_INDEX] = [ '#E67300' ];
+  ganttTableValues[17][COLOR_COLUMN_INDEX] = [ '#8B0707' ];
+  ganttTableValues[18][COLOR_COLUMN_INDEX] = [ '#329262' ];
+  ganttTableValues[19][COLOR_COLUMN_INDEX] = [ '#5574A6' ];
+  ganttTableValues[20][COLOR_COLUMN_INDEX] = [ '#3B3EAC' ];
   for (var i = 1; i <= numRows; i++) {
     var rowNumber = Number(i) + 6;
     // Evaluate color code for each task in Column L (hidden) using the color
     // legend and owner column
     ganttTableValues[i][11] =
         [ '=iferror(INDIRECT(if(iferror(MATCH($G' + rowNumber +
-          ',ArrayFormula(' + ownerUsernamesRange +
+          ',ArrayFormula(' + OWNER_USERNAMES_RANGE +
           '),0),-1)>0,JOIN("","$J",TEXT(ADD(6,(MATCH($G' + rowNumber +
-          ',ArrayFormula(' + ownerUsernamesRange +
+          ',ArrayFormula(' + OWNER_USERNAMES_RANGE +
           ')))),"###")))),"#9fc5e8")' ];
     // Create bar charts in Column E using the evaluated color codes in column L
     ganttTableValues[i][4] =
