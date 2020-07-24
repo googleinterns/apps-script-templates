@@ -41,49 +41,68 @@ function addMilestoneSummary(desiredLaunchDate, currentMilestoneNumber,
   // Milestone data starts from Column B onwards in the Summary Sheet
   var newMilestoneColumn = currentMilestoneNumber + 1;
   summarySheet.insertColumnAfter(lastMilestoneColumn);
+  const titleRow = 5;
+  const desiredLaunchDateRow = 6;
+  const estimatedDaysRow = 7;
+  const daysCompletedRow = 8;
+  const remainingDaysRow = 9;
+  const startDateRow = 10;
+  const estLaunchDateRow = 11;
+  const tasksWithNoDaysRow = 12;
+  const daysAheadRow = 13;
+  const remainingWeeksRow = 14;
+  const engCountRow = 15;
+  const notesRow = 16;
   // Milestone title
-  var titleCell = summarySheet.getRange(5, newMilestoneColumn);
+  var titleCell = summarySheet.getRange(titleRow, newMilestoneColumn);
   var title = 'Milestone ' + currentMilestoneNumber;
   titleCell.setValue(title);
   // Desired Launch Date
-  var desiredLaunchDateCell = summarySheet.getRange(6, newMilestoneColumn);
+  var desiredLaunchDateCell =
+      summarySheet.getRange(desiredLaunchDateRow, newMilestoneColumn);
   desiredLaunchDateCell.setValue(desiredLaunchDate);
   var desiredLaunchDateA1 = desiredLaunchDateCell.getA1Notation();
   // Estimated Coding Days
-  var estimatedDaysCell = summarySheet.getRange(7, newMilestoneColumn);
+  var estimatedDaysCell =
+      summarySheet.getRange(estimatedDaysRow, newMilestoneColumn);
   estimatedDaysCell.setFormula("Tasks!I" + newMilestoneRow);
   // Completed Coding Days
-  var daysCompletedCell = summarySheet.getRange(8, newMilestoneColumn);
+  var daysCompletedCell =
+      summarySheet.getRange(daysCompletedRow, newMilestoneColumn);
   daysCompletedCell.setFormula("Tasks!K" + newMilestoneRow);
   // Remaining Coding Days
-  var remainingDaysCell = summarySheet.getRange(9, newMilestoneColumn);
+  var remainingDaysCell =
+      summarySheet.getRange(remainingDaysRow, newMilestoneColumn);
   remainingDaysCell.setFormula("Tasks!J" + newMilestoneRow);
   var remainingDaysA1 = remainingDaysCell.getA1Notation();
   // Start Date
-  var startDateCell = summarySheet.getRange(10, newMilestoneColumn);
+  var startDateCell = summarySheet.getRange(startDateRow, newMilestoneColumn);
   startDateCell.setFormula("Tasks!F" + newMilestoneRow);
   // Estimated Launch Date
-  var estLaunchDateCell = summarySheet.getRange(11, newMilestoneColumn);
+  var estLaunchDateCell =
+      summarySheet.getRange(estLaunchDateRow, newMilestoneColumn);
   estLaunchDateCell.setFormula("Tasks!G" + newMilestoneRow);
   var estLaunchDateA1 = estLaunchDateCell.getA1Notation();
   // Tasks with no days
-  var tasksWithNoDaysCell = summarySheet.getRange(12, newMilestoneColumn);
+  var tasksWithNoDaysCell =
+      summarySheet.getRange(tasksWithNoDaysRow, newMilestoneColumn);
   tasksWithNoDaysCell.setFormula(
       '=ArrayFormula(sum(if(FLOOR(Tasks!$A7:$A)=' + currentMilestoneNumber +
       ', if(Tasks!$H7:$H<>"done",if(isblank(Tasks!$I7:$I),1,0),0),0)))');
   var tasksWithNoDaysA1 = tasksWithNoDaysCell.getA1Notation();
-  // Days ahead/behind (+/-) 
-  var daysAheadCell = summarySheet.getRange(13, newMilestoneColumn);
+  // Days ahead/behind (+/-)
+  var daysAheadCell = summarySheet.getRange(daysAheadRow, newMilestoneColumn);
   daysAheadCell.setFormula(
       '=if(OR(' + remainingDaysA1 + '>0,' + tasksWithNoDaysA1 + '>0), if(AND(' +
       desiredLaunchDateA1 + '<>"",' + estLaunchDateA1 + '<>""),FLOOR(' +
       desiredLaunchDateA1 + '-' + estLaunchDateA1 + '), ""),"DONE")');
   // Remaining Weeks
-  var remainingWeeksCell = summarySheet.getRange(14, newMilestoneColumn);
+  var remainingWeeksCell =
+      summarySheet.getRange(remainingWeeksRow, newMilestoneColumn);
   remainingWeeksCell.setFormula("=max(CEILING((" + desiredLaunchDateA1 +
                                 "-today())/7), 0)");
   // Number of engineers assigned
-  var engCountCell = summarySheet.getRange(15, newMilestoneColumn);
+  var engCountCell = summarySheet.getRange(engCountRow, newMilestoneColumn);
   var teamMilestoneColumn = currentMilestoneNumber + 6;
   var a1Notation = SpreadsheetApp.getActiveSpreadsheet()
                        .getSheetByName("Team")
@@ -91,10 +110,12 @@ function addMilestoneSummary(desiredLaunchDate, currentMilestoneNumber,
                        .getA1Notation();
   engCountCell.setFormula('=COUNTIF(Team!' + a1Notation + ',TRUE)');
   // Labels and Notes
-  var notesCell = summarySheet.getRange(16, newMilestoneColumn);
+  var notesCell = summarySheet.getRange(notesRow, newMilestoneColumn);
   notesCell.setFormula("Tasks!L" + newMilestoneRow);
+  // Set column width
   summarySheet.setColumnWidth(newMilestoneColumn, 140);
-  summarySheet.getRange(6, newMilestoneColumn, 11)
+  // Set border for new column in Summary Table
+  summarySheet.getRange(desiredLaunchDateRow, newMilestoneColumn, 11)
       .setBorder(true, true, true, true, false, false, "#c65911",
                  SpreadsheetApp.BorderStyle.SOLID);
 }
@@ -111,9 +132,10 @@ function addMilestoneTeam(currentMilestoneNumber) {
   teamSheet.insertColumnAfter(lastMilestoneColumn);
   var newMilestoneColumn = lastMilestoneColumn + 1;
   var teamCount = teamSize();
-  var firstEngineerRow = 6;
+  const firstEngineerRow = 6;
+  const titleRow = 5;
   // Set Milestone Title
-  var titleCell = teamSheet.getRange(5, newMilestoneColumn);
+  var titleCell = teamSheet.getRange(titleRow, newMilestoneColumn);
   var title = 'Milestone ' + currentMilestoneNumber;
   titleCell.setValue(title);
   // Add checkboxes in the new milestone column
@@ -148,41 +170,57 @@ function addMilestoneTaskSheet(milestoneTitle, notes, lastRow,
   }
   var currentMilestoneNumber = previousMilestoneNumber + 1;
   // Set values in the newly inserted milestone row
+  const titleColumn = 2;
+  const startDateColumn = 6;
+  const estimatedLaunchDateColumn = 7;
+  const estimatedDaysColumn = 9;
+  const remainingDaysColumn = 10;
+  const completedDaysColumn = 11;
+  const labelsColumn = 12;
+  const milestoneColumn = 13;
+  const taskNumberColumn = 14;
   // Milestone Title
-  var titleCell = taskSheet.getRange(newMilestoneRow, 2);  // Column B
+  var titleCell = taskSheet.getRange(newMilestoneRow, titleColumn);  // Column B
   titleCell.setValue(milestoneTitle);
   // Start Date of the Milestone
-  var startDateCell = taskSheet.getRange(newMilestoneRow, 6);  // Column F
+  var startDateCell =
+      taskSheet.getRange(newMilestoneRow, startDateColumn);  // Column F
   startDateCell.setFormula('=if(MINIFS(F:F,M:M,"=' + currentMilestoneNumber +
                            '",N:N,">0") = 0, "", MINIFS(F:F,M:M,"=' +
                            currentMilestoneNumber + '",N:N,">0"))');
   // Estimated Launch Date
-  var estimatedLaunchDateCell =
-      taskSheet.getRange(newMilestoneRow, 7);  // Column G
+  var estimatedLaunchDateCell = taskSheet.getRange(
+      newMilestoneRow, estimatedLaunchDateColumn);  // Column G
   estimatedLaunchDateCell.setFormula(
       '=if(MAXIFS(F:F,M:M,"=' + currentMilestoneNumber +
       '",N:N,">0") = 0, "", MAXIFS(F:F,M:M,"=' + currentMilestoneNumber +
       '",N:N,">0"))');
   // Estimated Coding days
-  var estimatedDaysCell = taskSheet.getRange(newMilestoneRow, 9);  // Column I
+  var estimatedDaysCell =
+      taskSheet.getRange(newMilestoneRow, estimatedDaysColumn);  // Column I
   estimatedDaysCell.setFormula('=SUMIFS(I:I,M:M,"=' + currentMilestoneNumber +
                                '",N:N,">0")');
   // Remaining Coding days
-  var remainingDaysCell = taskSheet.getRange(newMilestoneRow, 10);  // Column J
+  var remainingDaysCell =
+      taskSheet.getRange(newMilestoneRow, remainingDaysColumn);  // Column J
   remainingDaysCell.setFormula("= $I" + newMilestoneRow + "- $K" +
                                newMilestoneRow);
   // Completed Coding Days
-  var completedDaysCell = taskSheet.getRange(newMilestoneRow, 11);  // Column K
+  var completedDaysCell =
+      taskSheet.getRange(newMilestoneRow, completedDaysColumn);  // Column K
   completedDaysCell.setFormula('=SUMIFS(K:K,M:M,"=' + currentMilestoneNumber +
                                '",N:N,">0")');
-  //  Milestone number
-  var milestoneCell = taskSheet.getRange(newMilestoneRow, 13);  // Column M
-  milestoneCell.setValue(currentMilestoneNumber);
   // Labels and notes
-  var labelsNotes = taskSheet.getRange(newMilestoneRow, 12);  // Column L
+  var labelsNotes =
+      taskSheet.getRange(newMilestoneRow, labelsColumn);  // Column L
   labelsNotes.setValue(notes);
+  //  Milestone number
+  var milestoneCell =
+      taskSheet.getRange(newMilestoneRow, milestoneColumn);  // Column M
+  milestoneCell.setValue(currentMilestoneNumber);
   // Milestone Row is marked with '0' in Task Number Cell
-  var taskNumberCell = taskSheet.getRange(newMilestoneRow, 14);  // Column N
+  var taskNumberCell =
+      taskSheet.getRange(newMilestoneRow, taskNumberColumn);  // Column N
   taskNumberCell.setValue('0');
 }
 
