@@ -1,4 +1,20 @@
 /**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * Mails Summary Table to all the team members.
  */
 
@@ -11,11 +27,11 @@ function getMilestoneData() {
   var countColumns = sendMilestoneCount();
   // Milestone Data stored from Row 6, Column C onwards.
   var firstEngineerRow = 6;
-  var firstMilestoneColumn = 3;
+  var firstMilestoneColumn = 2;
   var values =
       SpreadsheetApp.getActive()
           .getSheetByName("Summary")
-          .getRange(firstEngineerRow, firstMilestoneColumn, 9, countColumns)
+          .getRange(firstEngineerRow, firstMilestoneColumn, 10, countColumns)
           .getValues();
   var milestones = [];
   for (var j = 0; j < countColumns; j++) {
@@ -40,6 +56,8 @@ function getMilestoneData() {
     milestone.daysSchedule = values[7][j];
     // Remaining Weeks in Iteration
     milestone.remainingWeeksInIteration = values[8][j];
+    // Number of engineers assigned to the milestone
+    milestone.engineerCount = values[9][j];
     milestones.push(milestone);
   }
   return milestones;
