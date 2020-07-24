@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+var OWNER_RANGE_TEAM_SHEET = 'Team!$C$6:$C$30';
+var OWNER_RANGE_TASK_SHEET = '$C$7:$C';
+var OWNER_RANGE_TIMELINE_SHEET = '$G$7:$G';
+
 /**
  * Updates spreadsheet by resetting values of start dates, launch dates, status,
  * priority of task/ milestone rows in the Task Sheet and the checkboxes in the
@@ -32,9 +36,6 @@ function updateSpreadsheet() {
     displayAlertMessage(message);
     return;
   }
-  const ownerRange = 'Team!$C$6:$C$30';
-  const ownerRangeTaskSheet = '$C$7:$C';
-  const ownerRangeTimelineSheet = '$G$7:$G';
   // Set Milestone Count
   taskSheet.getRange('E2').setValue('=MAX(M7:M)');
   // Set Estimated Launch Date of the Project
@@ -44,19 +45,17 @@ function updateSpreadsheet() {
   // Set Team Size in Tasks Sheet
   taskSheet.getRange('E4').setValue('=Team!D2');
   // Set Dropdown List for Owner Column in Tasks Sheet
-  taskSheet.getRange(ownerRangeTaskSheet)
-      .setDataValidation(
-          SpreadsheetApp.newDataValidation()
-              .setAllowInvalid(true)
-              .requireValueInRange(spreadsheet.getRange(ownerRange), true)
-              .build());
+  taskSheet.getRange(OWNER_RANGE_TASK_SHEET).setDataValidation(
+      SpreadsheetApp.newDataValidation()
+          .setAllowInvalid(true)
+          .requireValueInRange(spreadsheet.getRange(OWNER_RANGE_TEAM_SHEET), true)
+          .build());
   // Set Dropdown List for Owner Column in Timeline Sheet
-  ganttSheet.getRange(ownerRangeTimelineSheet)
-      .setDataValidation(
-          SpreadsheetApp.newDataValidation()
-              .setAllowInvalid(true)
-              .requireValueInRange(spreadsheet.getRange(ownerRange), true)
-              .build());
+  ganttSheet.getRange(OWNER_RANGE_TIMELINE_SHEET).setDataValidation(
+      SpreadsheetApp.newDataValidation()
+          .setAllowInvalid(true)
+          .requireValueInRange(spreadsheet.getRange(OWNER_RANGE_TEAM_SHEET), true)
+          .build());
   var currDate = new Date();
   var isProjectStartAfterToday = currDate < projectStart ? true : false;
   var firstEngineerRow = 6;
@@ -83,7 +82,7 @@ function updateSpreadsheet() {
     Logger.log('Team Size is 0');
     return;
   }
-  // Two dimensional array containing username, coding days per week, start
+  // Two dimensional array containing username, coding days per week, start 
   // date, end date information of the engineers in the Team Sheet
   var engineerInfo =
       teamSheet.getRange(firstEngineerRow, usernameColumn, countEng, 4)
