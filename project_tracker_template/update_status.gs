@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+var STATUS_COLUMN = 7;
+var EST_DAYS_COLUMN = 8;
+var REMAINING_DAYS_COLUMN = 9;
+var COMPLETED_DAYS_COLUMN = 10;
+
 /**
  * Updates status cells' values to 'Not Started','Done' or 'In Progress' in the
  * Task Sheet
@@ -22,29 +27,25 @@
  * @param {Number} tableLength Length of taskTable array
  */
 function updateStatus(taskTable, tableLength) {
-  const statusColumn = 7;
-  const estDaysColumn = 8;
-  const remainingDaysColumn = 9;
-  const completedDaysColumn = 10;
   for (var i = 0; i < tableLength; i++) {
-    var estimatedDays = taskTable[i][estDaysColumn];        // Column I
-    var remainingDays = taskTable[i][remainingDaysColumn];  // Column J
-    var completedDays = taskTable[i][completedDaysColumn];  // Column K
+    var estimatedDays = taskTable[i][EST_DAYS_COLUMN];   // Column I
+    var remainingDays = taskTable[i][REMAINING_DAYS_COLUMN];   // Column J
+    var completedDays = taskTable[i][COMPLETED_DAYS_COLUMN];  // Column K
     // Update status cell in Column H in the Task Sheet
     // Clear previous value from status cell
-    taskTable[i][statusColumn] = [ '' ];
+    taskTable[i][STATUS_COLUMN] = [ '' ];
     if (estimatedDays == '') {
-      // Status remains empty if estimate days are not input
+      // Status remains empty if estimate days are not input 
       // by the user/ equals 0
       continue;
     } else if (completedDays == '') {
       // Status when completed days are not input by the user/ equals 0
-      taskTable[i][statusColumn] = [ 'Not Started' ];
+      taskTable[i][STATUS_COLUMN] = [ 'Not Started' ];
     } else if (remainingDays == '0') {
       // Status when remaining days are 0
-      taskTable[i][statusColumn] = [ 'Done' ];
+      taskTable[i][STATUS_COLUMN] = [ 'Done' ];
     } else {
-      taskTable[i][statusColumn] = [ 'In Progress' ];
+      taskTable[i][STATUS_COLUMN] = [ 'In Progress' ];
     }
   }
 }
