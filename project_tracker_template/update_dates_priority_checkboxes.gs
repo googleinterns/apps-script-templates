@@ -52,20 +52,30 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
   // Initialize arrays 'actualStartDateArray' and 'isStartDateAfterTodayArray'
   getActualStartDate(displayStartDateArray, isStartDateAfterTodayArray,
                      actualStartDateArray, countEng, currDate);
+  const serialNumberColumn = 0;
+  const ownerColumn = 2;
+  const priorityColumn = 4;
+  const startDateColumn = 5;
+  const estLaunchDateColumn = 6;
+  const estWorkDaysColumn = 8;
+  const remainingWorkDaysColumn = 9;
+  const milestoneColumn = 12;
+  const taskNumberColumn = 13;
   for (var rowIndex = 0; rowIndex < tableLength; rowIndex++) {
-    var currentMilestoneNumber = taskTable[rowIndex][12];  // Column M
-    var ownerSelection = taskTable[rowIndex][2];           // Column C
-    var rowType = taskTable[rowIndex][13];                 // Column N
+    var currentMilestoneNumber =
+        taskTable[rowIndex][milestoneColumn];               // Column M
+    var ownerSelection = taskTable[rowIndex][ownerColumn];  // Column C
+    var rowType = taskTable[rowIndex][taskNumberColumn];    // Column N
     var rowNumber = Number(rowIndex) + 7;
     var isRowTypeTask = (rowType > '0') ? true : false;
     // If row type is 'task' and an owner is selected
     if (isRowTypeTask && ownerSelection != '') {
       var engineerIndex = match(ownerSelection, usernames);
-      var estimateWorkDays = taskTable[rowIndex][8];
+      var estimateWorkDays = taskTable[rowIndex][estWorkDaysColumn];
       // Task start date (to display)
       var displayStartDate = displayStartDateArray[engineerIndex];
       // Update Start Date (to display)
-      taskTable[rowIndex][5] = [ displayStartDate ];
+      taskTable[rowIndex][startDateColumn] = [ displayStartDate ];
       // Number of actual days required by an engineer to complete the estimated
       // work days of a task
       var actualEstimatedDays =
@@ -77,10 +87,10 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
         // Calculate end date using estimated work days
         var endDate = addDays(displayStartDate, actualEstimatedDays);
         // Update End Date
-        taskTable[rowIndex][6] = [ endDate ];
+        taskTable[rowIndex][estLaunchDateColumn] = [ endDate ];
       } else {
         // Calculate end date using remaining work days
-        var remainingWorkDays = taskTable[rowIndex][9];
+        var remainingWorkDays = taskTable[rowIndex][remainingWorkDaysColumn];
         // Start date to calculate estimated launch date
         var actualStartDate = actualStartDateArray[engineerIndex];
         // Number of actual days required by an engineer to complete the
@@ -89,7 +99,7 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
             Math.ceil(remainingWorkDays / codingUnitsPerDay[engineerIndex]);
         var endDate = addDays(actualStartDate, actualRemainingDays);
         // Update End Date
-        taskTable[rowIndex][6] = [ endDate ];
+        taskTable[rowIndex][estLaunchDateColumn] = [ endDate ];
         // Update the next task start date (for calculating launch date) of the
         // engineer to the next day of current task's estimated launch date
         actualStartDate = addDays(endDate, 1);
@@ -104,7 +114,7 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
       // Sheet
       checkBoxValues[engineerIndex][currentMilestoneNumber - 1] = "=TRUE";
       // Update task number in Column N
-      taskTable[rowIndex][13] = [
+      taskTable[rowIndex][taskNumberColumn] = [
         '=IF(ISNUMBER(INDIRECT("R[-1]C[0]", false)),INDIRECT("R[-1]C[0]", false)+1,1)'
       ];
       // Update serial number in Column A
@@ -116,17 +126,17 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
       // If row type is milestone
       var nextRowNumber = Number(rowNumber) + 1;
       // Update Start Date
-      taskTable[rowIndex][5] =
+      taskTable[rowIndex][startDateColumn] =
           [ '=if(MINIFS(F:F,M:M,"=' + currentMilestoneNumber +
             '",N:N,">0") = 0, "", MINIFS(F:F,M:M,"=' + currentMilestoneNumber +
             '",N:N,">0"))' ];
       // Update Estimated Launch Date
-      taskTable[rowIndex][6] =
+      taskTable[rowIndex][estLaunchDateColumn] =
           [ '=if(MAXIFS(G:G,M:M,"=' + currentMilestoneNumber +
             '",N:N,">0") = 0, "", MAXIFS(G:G,M:M,"=' + currentMilestoneNumber +
             '",N:N,">0"))' ];
       // Update Priority
-      taskTable[rowIndex][4] = [
+      taskTable[rowIndex][priorityColumn] = [
         '=if(iferror(MATCH("HIGH",ArrayFormula(if(($N' + nextRowNumber +
         ':$N) > 0,if(($M' + nextRowNumber + ':$M)=' + currentMilestoneNumber +
         ',$E' + nextRowNumber +
@@ -139,28 +149,29 @@ function updateDatesPriorityCheckbox(projectStart, currDate,
         ':$E,""),"")),0))>0, "LOW","")))'
       ];
       // Update estimated work days
-      taskTable[rowIndex][8] =
+      taskTable[rowIndex][estWorkDaysColumn] =
           [ '=SUMIFS(I:I,M:M,"=' + currentMilestoneNumber + '",N:N,">0")' ];
       // Update completed work days
       taskTable[rowIndex][10] =
           [ '=SUMIFS(K:K,M:M,"=' + currentMilestoneNumber + '",N:N,">0")' ];
       // Update task number in Column N
-      taskTable[rowIndex][13] = [ '0' ];
+      taskTable[rowIndex][taskNumberColumn] = [ '0' ];
     } else {
       // If row type is task and no owner is selected then
       // clear Start Date and Estimated Launch Date cells
-      taskTable[rowIndex][5] = [ '' ];
-      taskTable[rowIndex][6] = [ '' ];
+      taskTable[rowIndex][startDateColumn] = [ '' ];
+      taskTable[rowIndex][estLaunchDateColumn] = [ '' ];
       // Update task number in Column N
-      taskTable[rowIndex][13] = [
+      taskTable[rowIndex][taskNumberColumn] = [
         '=IF(ISNUMBER(INDIRECT("R[-1]C[0]", false)),INDIRECT("R[-1]C[0]", false)+1,1)'
       ];
       // Update serial number in Column A
-      taskTable[rowIndex][0] = [
+      taskTable[rowIndex][serialNumberColumn] = [
         '=IF(ISNUMBER(INDIRECT("R[-1]C[12]", false)),JOIN(".",INDIRECT("R[-1]C[12]", false),INDIRECT("R[-1]C[13]", false)+1))'
       ];
     }
     // Update remaining work days for all task and milestone rows
-    taskTable[rowIndex][9] = [ '=$I' + rowNumber + '-$K' + rowNumber ];
+    taskTable[rowIndex][remainingWorkDaysColumn] =
+        [ '=$I' + rowNumber + '-$K' + rowNumber ];
   }
 }
