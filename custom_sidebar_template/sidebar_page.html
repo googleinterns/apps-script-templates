@@ -1,3 +1,15 @@
+<!--
+Copyright 2020 Google LLC
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     https://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 <!DOCTYPE html>
 <html>
   <!-- The HTML <head> element contains machine-readable information (metadata) about the document -->
@@ -29,6 +41,7 @@
         top: 2px;
         width: 15px;
       }
+      
       /* Checkbox */
       input[type="checkbox"] {
         background: #fff;
@@ -60,33 +73,35 @@
       <!-- Text is the default type of <input> tag -->
       <!-- Line-breaks are automatically removed from the input text value -->
       <input type="text" id="input-text"><br><br>
+      <!-- The <button> element represents a clickable button -->
+      <button onclick='sendText()'>Submit Text</button><br><br>
       
       <!-- Dropdown List -->
-      <div id = "dropdown">
-        <label for="list-elements">Select a list element:</label><br>
-        <!-- The <select> element represents a control that provides a menu of options -->
-        <select id="dropdown-list" name="select-list-element">
-          <!-- The <option> tag defines an option in a select list --> 
-          <!-- <option> elements go inside a <select>, <optgroup>, or <datalist> element -->
-          <option value="List Element 1">List Element 1</option>
-          <option value="List Element 2">List Element 2</option>
-          <option value="List Element 3">List Element 3</option>
-          <option value="List Element 4">List Element 4</option>
-        </select>
-      </div>
-      <br>
+      <label for="list-elements">Select a list element:</label><br>
+      <!-- The <select> element represents a control that provides a menu of options -->
+      <select id="dropdown-list" name="select-list-element">
+        <!-- The <option> tag defines an option in a select list --> 
+        <!-- <option> elements go inside a <select>, <optgroup>, or <datalist> element -->
+        <option value="1">List Element 1</option>
+        <option value="2">List Element 2</option>
+        <option value="3">List Element 3</option>
+        <option value="4">List Element 4</option>
+      </select>
+      <br><br>
+      <button onclick='sendListElement()'>Submit List Element Selection</button><br><br>
       
       <!-- Radio Buttons -->
       <!-- A radio button allows a single value to be selected out of multiple choices with the same name value -->
       <!-- The <div> tag defines a division or a section in an HTML document -->
       <div id = "input-radio-buttons">
         <label for="input-radio">Select a radio button:</label><br>
-          <input type="radio" id="0" name="radio-buttons" value = "Radio Button 1"><label>Radio Button 1</label><br>
-          <input type="radio" id="1" name="radio-buttons" value = "Radio Button 2"><label>Radio Button 2</label><br>
-          <input type="radio" id="2" name="radio-buttons" value = "Radio Button 3"><label>Radio Button 3</label><br>
+          <input type="radio" id="0" name="radio-buttons" value = "1"><label>Radio Button 1</label><br>
+          <input type="radio" id="1" name="radio-buttons" value = "2"><label>Radio Button 2</label><br>
+          <input type="radio" id="2" name="radio-buttons" value = "3"><label>Radio Button 3</label><br>
+        <br>
+        <button onclick='sendRadioButtonSelection()'>Submit Radio Button Selection</button>
       </div>
       <br>
-      
       <!-- Checkbox Buttons -->
       <!-- Checkboxes are used to let a user select one or more options from a limited number of choices -->
       <div id = "input-checkbox">
@@ -95,20 +110,26 @@
           <input type="checkbox" id="1" name="checkboxes" value = "2" ><label>Checkbox 2</label><br>
           <input type="checkbox" id="2" name="checkboxes" value = "3" ><label>Checkbox 3</label><br>
         <br>
+        <button onclick='sendCheckboxSelection()'>Submit Checkbox Selection</button><br><br>
       </div>
-      <!-- The <button> element represents a clickable button -->
-      <button onclick='sendData()'>Submit</button><br><br>
     </form>
-    
     <!-- The <script> tag is used to define a client-side script (JavaScript) -->
     <script>
-      // Send text input, selected list element value, selected radio button value, 
-      // array of selected checkbox values to the relevant server-side Apps Script function
-      function sendData(){
-        // The getElementById() method returns the element that has 
-        // the ID attribute with the specified value.
+      // Send text input to the relevant server-side Apps Script function
+      function sendText(){
+        // The getElementById() method returns the element that has the ID attribute with the specified value.
         var inputText = document.getElementById("input-text").value;
+        // google.script.run is an asynchronous client-side JavaScript API
+        // that can call server-side Apps Script functions.
+        google.script.run.textFunction(inputText);
+      }
+      // Send selected list element value to the relevant server-side Apps Script function
+      function sendListElement(){
         var selectedListElement = document.getElementById("dropdown-list").value;
+        google.script.run.listFunction(selectedListElement);
+      }
+      // Send selected radio button value to the relevant server-side Apps Script function
+      function sendRadioButtonSelection(){
         var selectedRadioButton;
         // The querySelectorAll() method returns all elements in the document
         // that matches a specified CSS selector.
@@ -116,9 +137,12 @@
         for(const button of radioButtons){
           if (button.checked) {
             selectedRadioButton = button.value; 
-            break;
           }
         }
+        google.script.run.radioButtonFunction(selectedRadioButton);
+      }
+      // Send array object of selected checkbox values to the relevant server-side Apps Script function
+      function sendCheckboxSelection(){
         var selectedCheckboxes = [];
         const checkBoxes = document.querySelectorAll('input[name="checkboxes"]');
         for(const checkBox of checkBoxes){
@@ -126,9 +150,7 @@
             selectedCheckboxes.push(checkBox.value); 
           }
         }
-        // google.script.run is an asynchronous client-side JavaScript API
-        // that can call server-side Apps Script functions.
-        google.script.run.displayInput(inputText,selectedListElement,selectedRadioButton,selectedCheckboxes);
+        google.script.run.checkBoxFunction(selectedCheckboxes);
       }
     </script>
   </body>
