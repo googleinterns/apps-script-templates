@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-const SERIAL_NUMBER_RANGE = 'Tasks!$A$7:$A';
-const TITLE_RANGE = 'Tasks!$B$7:$B';
-const START_DATE_RANGE = 'Tasks!$F$7:$F';
-const EST_LAUNCH_DATE_RANGE = 'Tasks!$G$7:$G';
-const STATUS_RANGE = 'Tasks!$H$7:$H';
-const OWNER_RANGE = 'Tasks!$C$7:$C';
-const TASK_NUMBER_RANGE = 'Tasks!$N$7:$N';
-const USERNAME_RANGE = 'Team!$C$6:$C$25';
-const OWNER_USERNAMES_RANGE = '$I$7:$I$26';
-const COLOR_COLUMN_INDEX = 9;
+var SERIAL_NUMBER_RANGE = 'Tasks!$A$7:$A';
+var TITLE_RANGE = 'Tasks!$B$7:$B';
+var START_DATE_RANGE = 'Tasks!$F$7:$F';
+var EST_LAUNCH_DATE_RANGE = 'Tasks!$G$7:$G';
+var STATUS_RANGE = 'Tasks!$H$7:$H';
+var OWNER_RANGE = 'Tasks!$C$7:$C';
+var TASK_NUMBER_RANGE = 'Tasks!$N$7:$N';
+var USERNAME_RANGE = 'Team!$C$6:$C$25';
+var OWNER_USERNAMES_RANGE = '$I$7:$I$26';     
+var COLOR_COLUMN_INDEX = 9; 
 
 /**
  * Updates all the custom formulas in the Timeline sheet
