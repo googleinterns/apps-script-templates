@@ -22,25 +22,29 @@
  * @param {Number} tableLength Length of taskTable array
  */
 function updateStatus(taskTable, tableLength) {
+  const statusColumn = 7;
+  const estDaysColumn = 8;
+  const remainingDaysColumn = 9;
+  const completedDaysColumn = 10;
   for (var i = 0; i < tableLength; i++) {
-    var estimatedDays = taskTable[i][8];   // Column I
-    var remainingDays = taskTable[i][9];   // Column J
-    var completedDays = taskTable[i][10];  // Column K
+    var estimatedDays = taskTable[i][estDaysColumn];        // Column I
+    var remainingDays = taskTable[i][remainingDaysColumn];  // Column J
+    var completedDays = taskTable[i][completedDaysColumn];  // Column K
     // Update status cell in Column H in the Task Sheet
     // Clear previous value from status cell
-    taskTable[i][7] = [ '' ];
+    taskTable[i][statusColumn] = [ '' ];
     if (estimatedDays == '') {
       // Status remains empty if estimate days are not input
       // by the user/ equals 0
       continue;
     } else if (completedDays == '') {
       // Status when completed days are not input by the user/ equals 0
-      taskTable[i][7] = [ 'Not Started' ];
+      taskTable[i][statusColumn] = [ 'Not Started' ];
     } else if (remainingDays == '0') {
       // Status when remaining days are 0
-      taskTable[i][7] = [ 'Done' ];
+      taskTable[i][statusColumn] = [ 'Done' ];
     } else {
-      taskTable[i][7] = [ 'In Progress' ];
+      taskTable[i][statusColumn] = [ 'In Progress' ];
     }
   }
 }
