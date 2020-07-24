@@ -28,10 +28,13 @@ function updateSpreadsheet() {
   var projectStart = taskSheet.getRange('H2').getValue();
   // Display alert if the project start date is invalid
   if (!isValidDate(projectStart)) {
-    var message = 'Please enter valid Project Start Date!';
+    var message = 'Please enter valid Project Start Date in Tasks Sheet!';
     displayAlertMessage(message);
     return;
   }
+  const ownerRange = 'Team!$C$6:$C$30';
+  const ownerRangeTaskSheet = '$C$7:$C';
+  const ownerRangeTimelineSheet = '$G$7:$G';
   // Set Milestone Count
   taskSheet.getRange('E2').setValue('=MAX(M7:M)');
   // Set Estimated Launch Date of the Project
@@ -41,17 +44,19 @@ function updateSpreadsheet() {
   // Set Team Size in Tasks Sheet
   taskSheet.getRange('E4').setValue('=Team!D2');
   // Set Dropdown List for Owner Column in Tasks Sheet
-  taskSheet.getRange('$C$7:$C').setDataValidation(
-      SpreadsheetApp.newDataValidation()
-          .setAllowInvalid(true)
-          .requireValueInRange(spreadsheet.getRange('Team!$C$6:$C$30'), true)
-          .build());
+  taskSheet.getRange(ownerRangeTaskSheet)
+      .setDataValidation(
+          SpreadsheetApp.newDataValidation()
+              .setAllowInvalid(true)
+              .requireValueInRange(spreadsheet.getRange(ownerRange), true)
+              .build());
   // Set Dropdown List for Owner Column in Timeline Sheet
-  ganttSheet.getRange('$G$7:$G').setDataValidation(
-      SpreadsheetApp.newDataValidation()
-          .setAllowInvalid(true)
-          .requireValueInRange(spreadsheet.getRange('Team!$C$6:$C$30'), true)
-          .build());
+  ganttSheet.getRange(ownerRangeTimelineSheet)
+      .setDataValidation(
+          SpreadsheetApp.newDataValidation()
+              .setAllowInvalid(true)
+              .requireValueInRange(spreadsheet.getRange(ownerRange), true)
+              .build());
   var currDate = new Date();
   var isProjectStartAfterToday = currDate < projectStart ? true : false;
   var firstEngineerRow = 6;
@@ -78,8 +83,8 @@ function updateSpreadsheet() {
     Logger.log('Team Size is 0');
     return;
   }
-  // Two dimensional array containing information of the engineers in the Team
-  // Sheet
+  // Two dimensional array containing username, coding days per week, start
+  // date, end date information of the engineers in the Team Sheet
   var engineerInfo =
       teamSheet.getRange(firstEngineerRow, usernameColumn, countEng, 4)
           .getValues();
