@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <form>
+        <label for="range">Enter Range:</label><br>
+        <input type="text" id="range" name="range"><br><br>
+        
+        <label for="charttype">Select Chart Type:</label><br>
+        <select id="chartType" name="Chart Type">
+            <option value="0">Line</option>
+            <option value="1">Bar</option>
+            <option value="2">Column</option>
+            <option value="3">Pie</option>
+        </select>
+        <br><br>
+        
+        <button onclick='sendData()'>Create Chart</button><br><br>
+        <button onclick='GetSuggestion()'>Get Suggestions for Chart Type</button><br><br>
+        <div id = "suggest"></div>
+    </form>
+    <script>
+        function sendData(){
+            var range = document.getElementById("range").value 
+            var chart_type = document.getElementById("chartType").value 
+            google.script.run.newChart(range, chart_type)
+        }
+        
+        function onSuccess(suggestions) {
+            document.getElementById('suggest').innerHTML = ""; //remove Loading...
+            for(index in suggestions){
+                 var sno = Number(index)+1;
+                 document.getElementById('suggest').innerHTML += sno +') '+suggestions[index]+'<br>'; 
+            }     
+        }
+        function GetSuggestion(){
+            document.getElementById('suggest').innerHTML = "Loading...";
+            var range = document.getElementById("range").value 
+            google.script.run.withSuccessHandler(onSuccess).GiveSuggestion(range);
+        }
+</script>
+    </script>
+  </body>
+</html>
+
+
